@@ -60,8 +60,8 @@
     </properties>
 
     <modules>
+        <module>bytekit-instrument-api</module>
         <module>bytekit-core</module>
-        <module>bytekit-api</module>
     </modules>
 
     <dependencyManagement>

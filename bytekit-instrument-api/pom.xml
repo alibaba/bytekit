@@ -7,8 +7,8 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>bytekit-api</artifactId>
-    <name>bytekit-api</name>
+    <artifactId>bytekit-instrument-api</artifactId>
+    <name>bytekit-instrument-api</name>
 
     <dependencies>
 
