@@ -334,7 +334,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>com/taobao/arthas/bytekit/asm/interceptor*</exclude>
+                                <exclude>com/alibaba/bytekit/asm/interceptor*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
