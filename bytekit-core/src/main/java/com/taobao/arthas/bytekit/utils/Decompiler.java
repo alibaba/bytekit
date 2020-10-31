@@ -22,7 +22,6 @@ import com.alibaba.arthas.deps.org.objectweb.asm.util.Printer;
 import com.alibaba.arthas.deps.org.objectweb.asm.util.Textifier;
 import com.alibaba.arthas.deps.org.objectweb.asm.util.TraceClassVisitor;
 import com.alibaba.arthas.deps.org.objectweb.asm.util.TraceMethodVisitor;
-import com.taobao.arthas.common.FileUtils;
 
 /**
  * TODO com.taobao.arthas.core.util.Decompiler
