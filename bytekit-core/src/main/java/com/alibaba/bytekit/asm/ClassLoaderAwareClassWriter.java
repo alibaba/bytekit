@@ -1,7 +1,7 @@
 package com.alibaba.bytekit.asm;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassReader;
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassWriter;
+import com.alibaba.deps.org.objectweb.asm.ClassReader;
+import com.alibaba.deps.org.objectweb.asm.ClassWriter;
 
 /**
  * @author vlinux

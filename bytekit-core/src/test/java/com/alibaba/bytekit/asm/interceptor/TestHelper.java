@@ -3,8 +3,8 @@ package com.alibaba.bytekit.asm.interceptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;
 import com.alibaba.bytekit.asm.interceptor.parser.DefaultInterceptorClassParser;

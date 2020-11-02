@@ -1,7 +1,7 @@
 package com.alibaba.bytekit.asm.binding;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 
 /**
  * 在 return/throw/invoke 等location时，需要把栈上的值保存到locals里

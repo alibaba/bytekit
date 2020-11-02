@@ -1,7 +1,7 @@
 package com.alibaba.bytekit.asm.location.filter;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
 import com.alibaba.bytekit.asm.location.LocationType;
 
 /**

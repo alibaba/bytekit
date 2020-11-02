@@ -3,20 +3,20 @@ package com.alibaba.bytekit.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.Method;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.FieldInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.IntInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LdcInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LocalVariableNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.TypeInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.VarInsnNode;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.commons.Method;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.IntInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LdcInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.VarInsnNode;
 
 public class AsmOpUtils {
 

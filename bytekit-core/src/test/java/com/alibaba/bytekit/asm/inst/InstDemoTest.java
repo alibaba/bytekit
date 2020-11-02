@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AnnotationNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.FieldNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.AnnotationNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.bytekit.agent.inst.NewField;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.utils.AsmUtils;

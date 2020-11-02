@@ -3,7 +3,7 @@ package com.alibaba.bytekit.asm.location;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.location.Location.EnterLocation;
 import com.alibaba.bytekit.asm.location.filter.LocationFilter;

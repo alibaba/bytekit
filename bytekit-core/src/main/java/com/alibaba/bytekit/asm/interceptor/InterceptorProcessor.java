@@ -2,13 +2,13 @@ package com.alibaba.bytekit.asm.interceptor;
 
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.JumpInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LabelNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.JumpInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LabelNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.TryCatchBlock;
 import com.alibaba.bytekit.asm.binding.Binding;

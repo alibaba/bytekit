@@ -2,10 +2,10 @@ package com.alibaba.bytekit.asm.binding;
 
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LocalVariableNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
 import com.alibaba.bytekit.utils.AsmOpUtils;
 
 public class LocalVarNamesBinding extends Binding {

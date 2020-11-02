@@ -3,8 +3,8 @@ package com.alibaba.bytekit.asm.binding;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 import com.alibaba.bytekit.utils.AsmOpUtils;
 
 /**

@@ -11,25 +11,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassReader;
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassVisitor;
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassWriter;
-import com.alibaba.arthas.deps.org.objectweb.asm.Label;
-import com.alibaba.arthas.deps.org.objectweb.asm.MethodVisitor;
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.ClassRemapper;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.JSRInlinerAdapter;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.Remapper;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.FieldNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LocalVariableNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.TypeInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.ASMifier;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.TraceClassVisitor;
+import com.alibaba.deps.org.objectweb.asm.ClassReader;
+import com.alibaba.deps.org.objectweb.asm.ClassVisitor;
+import com.alibaba.deps.org.objectweb.asm.ClassWriter;
+import com.alibaba.deps.org.objectweb.asm.Label;
+import com.alibaba.deps.org.objectweb.asm.MethodVisitor;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.commons.ClassRemapper;
+import com.alibaba.deps.org.objectweb.asm.commons.JSRInlinerAdapter;
+import com.alibaba.deps.org.objectweb.asm.commons.Remapper;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
+import com.alibaba.deps.org.objectweb.asm.util.ASMifier;
+import com.alibaba.deps.org.objectweb.asm.util.TraceClassVisitor;
 import com.alibaba.bytekit.asm.ClassLoaderAwareClassWriter;
 
 /**
@@ -564,7 +564,7 @@ public class AsmUtils {
     /**
      * Java ClassFile versions (the minor version is stored in the 16 most
      * significant bits, and the major version in the 16 least significant bits).
-     * @see com.alibaba.arthas.deps.org.objectweb.asm.Opcodes#V_PREVIEW
+     * @see com.alibaba.deps.org.objectweb.asm.Opcodes#V_PREVIEW
      * @param version
      * @return
      */

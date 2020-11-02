@@ -2,15 +2,15 @@ package com.alibaba.bytekit.asm.inst.impl;
 
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.Method;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.TypeInsnNode;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.commons.Method;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
 import com.alibaba.bytekit.agent.inst.InstrumentApi;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.utils.AsmOpUtils;

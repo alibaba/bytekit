@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;
 import com.alibaba.bytekit.asm.interceptor.annotation.AtSyncExit.SyncExitInterceptorProcessorParser;
 import com.alibaba.bytekit.asm.interceptor.parser.InterceptorProcessorParser;

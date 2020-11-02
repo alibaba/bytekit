@@ -6,15 +6,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.JumpInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LabelNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.JumpInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LabelNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.bytekit.asm.TryCatchBlock;
 import com.alibaba.bytekit.utils.AsmOpUtils;
 import com.alibaba.bytekit.utils.AsmUtils;

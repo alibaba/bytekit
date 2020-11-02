@@ -1,6 +1,6 @@
 package com.alibaba.bytekit.asm.interceptor.annotation;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.bytekit.asm.binding.Binding;
 import com.alibaba.bytekit.asm.interceptor.InterceptorMethodConfig;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;

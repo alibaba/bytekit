@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.bytekit.asm.binding.Binding;
 import com.alibaba.bytekit.asm.binding.ThrowableBinding;
 import com.alibaba.bytekit.asm.interceptor.InterceptorMethodConfig;

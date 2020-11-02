@@ -18,9 +18,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba.arthas</groupId>
-            <artifactId>arthas-repackage-asm</artifactId>
-            <version>0.0.6</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>repackage-asm</artifactId>
         </dependency>
 
         <dependency>

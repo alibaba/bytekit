@@ -1,8 +1,8 @@
 package com.alibaba.bytekit.asm.binding;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
 import com.alibaba.bytekit.asm.location.Location;
 import com.alibaba.bytekit.asm.location.MethodInsnNodeWare;
 import com.alibaba.bytekit.utils.AsmOpUtils;

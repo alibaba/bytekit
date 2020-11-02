@@ -1,9 +1,9 @@
 package com.alibaba.bytekit.asm;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LabelNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.TryCatchBlockNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.LabelNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.TryCatchBlockNode;
 
 import java.util.ArrayList;
 import java.util.Collections;

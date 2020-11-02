@@ -3,9 +3,9 @@ package com.alibaba.bytekit.asm.location;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.FieldInsnNode;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldInsnNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.location.Location.FieldAccessLocation;
 

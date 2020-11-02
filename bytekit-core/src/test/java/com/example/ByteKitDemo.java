@@ -3,8 +3,8 @@ package com.example;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.binding.Binding;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;

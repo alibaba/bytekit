@@ -3,8 +3,8 @@ package com.alibaba.bytekit.asm.location;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.LabelNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.LabelNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.TryCatchBlock;
 import com.alibaba.bytekit.asm.location.Location.ExceptionExitLocation;

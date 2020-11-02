@@ -1,6 +1,6 @@
 package com.alibaba.bytekit.asm.matcher;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 
 public interface MethodMatcher {
 

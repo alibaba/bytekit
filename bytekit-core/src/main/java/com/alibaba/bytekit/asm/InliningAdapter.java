@@ -1,9 +1,9 @@
 package com.alibaba.bytekit.asm;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Label;
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.commons.LocalVariablesSorter;
+import com.alibaba.deps.org.objectweb.asm.Label;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.commons.LocalVariablesSorter;
 
 /**
  * Adapter for to be inlined code.

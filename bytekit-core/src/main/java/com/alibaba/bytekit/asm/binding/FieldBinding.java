@@ -1,10 +1,10 @@
 package com.alibaba.bytekit.asm.binding;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Opcodes;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.FieldNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.utils.AsmOpUtils;
 import com.alibaba.bytekit.utils.AsmUtils;

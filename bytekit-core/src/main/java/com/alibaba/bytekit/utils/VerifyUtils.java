@@ -7,11 +7,11 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassReader;
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassVisitor;
-import com.alibaba.arthas.deps.org.objectweb.asm.ClassWriter;
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.CheckClassAdapter;
+import com.alibaba.deps.org.objectweb.asm.ClassReader;
+import com.alibaba.deps.org.objectweb.asm.ClassVisitor;
+import com.alibaba.deps.org.objectweb.asm.ClassWriter;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.util.CheckClassAdapter;
 
 /**
  *

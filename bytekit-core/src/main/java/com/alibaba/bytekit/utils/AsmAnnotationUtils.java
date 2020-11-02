@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AnnotationNode;
+import com.alibaba.deps.org.objectweb.asm.tree.AnnotationNode;
 
 /**
  * 

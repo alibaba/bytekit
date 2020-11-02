@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;
 import com.alibaba.bytekit.asm.interceptor.annotation.AtInvokeException.InvokeExceptionInterceptorProcessorParser;
 import com.alibaba.bytekit.asm.interceptor.parser.InterceptorProcessorParser;

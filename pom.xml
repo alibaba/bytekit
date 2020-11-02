@@ -50,8 +50,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <asm.version>6.0</asm.version>
-
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
 
         <!-- Test -->
@@ -73,9 +71,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.alibaba.arthas</groupId>
-                <artifactId>arthas-repackage-asm</artifactId>
-                <version>0.0.6</version>
+                <groupId>com.alibaba</groupId>
+                <artifactId>repackage-asm</artifactId>
+                <version>0.0.7</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

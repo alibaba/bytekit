@@ -14,14 +14,14 @@ import java.util.UUID;
 import org.benf.cfr.reader.api.CfrDriver;
 import org.benf.cfr.reader.api.OutputSinkFactory;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.MethodNode;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.Printer;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.Textifier;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.TraceClassVisitor;
-import com.alibaba.arthas.deps.org.objectweb.asm.util.TraceMethodVisitor;
+import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.util.Printer;
+import com.alibaba.deps.org.objectweb.asm.util.Textifier;
+import com.alibaba.deps.org.objectweb.asm.util.TraceClassVisitor;
+import com.alibaba.deps.org.objectweb.asm.util.TraceMethodVisitor;
 
 /**
  * TODO com.taobao.arthas.core.util.Decompiler

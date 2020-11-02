@@ -1,7 +1,7 @@
 package com.alibaba.bytekit.asm.binding;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.InsnList;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 
 /**
  * TODO 要检查 location 是否是合法的

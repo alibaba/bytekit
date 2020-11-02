@@ -11,8 +11,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.arthas.deps.org.objectweb.asm.Type;
-import com.alibaba.arthas.deps.org.objectweb.asm.tree.ClassNode;
+import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.bytekit.utils.AsmAnnotationUtils;
 import com.alibaba.bytekit.utils.AsmUtils;
 
