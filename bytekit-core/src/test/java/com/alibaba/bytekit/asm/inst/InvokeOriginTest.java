@@ -174,4 +174,11 @@ public class InvokeOriginTest {
         Object object = replace(methodName);
         Assertions.assertThat(VerifyUtils.invoke(object, methodName, 100)).isEqualTo((100 + 1) * 100 / 2);
     }
+
+    @Test
+    public void test_changeArgs() throws Exception {
+        String methodName = testName.getMethodName().substring("test_".length());
+        Object object = replace(methodName);
+        Assertions.assertThat(VerifyUtils.invoke(object, methodName, 100, 333, "fff")).isEqualTo("xxx19999");
+    }
 }

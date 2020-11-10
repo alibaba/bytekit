@@ -84,4 +84,13 @@ public class InvokeOriginDemo_APM {
         System.err.println(result);
         return result;
     }
+
+    public String changeArgs(int i, long l, String str) {
+        i = 1;
+        l = 9999;
+        str = "xxx";
+        String result = InstrumentApi.invokeOrigin();
+        System.err.println(result);
+        return result;
+    }
 }

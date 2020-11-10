@@ -74,4 +74,9 @@ public class InvokeOriginDemo {
         }
         return i + recursive(i - 1);
     }
+
+    // 测试修改args
+    public String changeArgs(int i, long l, String str) {
+        return str + i + l;
+    }
 }
