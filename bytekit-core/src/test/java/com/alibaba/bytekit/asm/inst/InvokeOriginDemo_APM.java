@@ -1,5 +1,6 @@
 package com.alibaba.bytekit.asm.inst;
 
+import com.alibaba.bytekit.agent.inst.Instrument;
 import com.alibaba.bytekit.agent.inst.InstrumentApi;
 
 /**
@@ -7,7 +8,8 @@ import com.alibaba.bytekit.agent.inst.InstrumentApi;
  * @author hengyunabc 2019-03-18
  *
  */
-public class InvokeOriginDemo_APM {
+@Instrument(Class = "com.alibaba.bytekit.asm.inst.InvokeOriginDemo")
+public abstract class InvokeOriginDemo_APM {
 
     public void returnVoid() {
         Object o = InstrumentApi.invokeOrigin();

@@ -4,7 +4,7 @@ import com.alibaba.bytekit.agent.inst.Instrument;
 import com.alibaba.bytekit.agent.inst.NewField;
 
 @Instrument
-public class InstDemo_APM {
+public abstract class InstDemo_APM {
 
     @NewField
     private String newField;

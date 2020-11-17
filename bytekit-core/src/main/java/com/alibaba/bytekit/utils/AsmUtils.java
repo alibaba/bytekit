@@ -311,6 +311,9 @@ public class AsmUtils {
         return methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC;
     }
 
+    public static boolean isAbstract(MethodNode methodNode) {
+        return (methodNode.access & Opcodes.ACC_ABSTRACT) != 0;
+    }
 
 	public static boolean isConstructor(MethodNode methodNode) {
 		return methodNode.name != null && methodNode.name.equals("<init>");
