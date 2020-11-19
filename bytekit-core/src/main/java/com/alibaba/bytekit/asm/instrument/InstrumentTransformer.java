@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.alibaba.bytekit.asm.inst.impl.InstrumentImpl;
 import com.alibaba.bytekit.utils.AsmUtils;
-import com.alibaba.bytekit.utils.Decompiler;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
@@ -58,23 +57,23 @@ public class InstrumentTransformer implements ClassFileTransformer {
                         continue;
                     }
 
+                    // 不处理构造函数
+                    if (AsmUtils.isConstructor(methodNode)) {
+                        continue;
+                    }
+
                     // 从原来的类里查找对应的函数
                     MethodNode findMethod = AsmUtils.findMethod(originClassNode.methods, methodNode);
                     if (findMethod != null) {
                         MethodNode updatedMethodNode = InstrumentImpl.replaceInvokeOrigin(originClassNode.name,
                                 findMethod, methodNode);
 
-                        System.err.println(Decompiler.toString(updatedMethodNode));
-
                         AsmUtils.replaceMethod(targetClassNode, updatedMethodNode);
-
                     } else {
                         // 没找到对应的，则复制函数过去
                         AsmUtils.addMethod(targetClassNode, methodNode);
                     }
-
                 }
-
                 // 处理@NewField
 
             }
@@ -82,7 +81,6 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
         if (targetClassNode != null) {
             byte[] resutlBytes = AsmUtils.toBytes(targetClassNode);
-            System.err.println(Decompiler.toString(targetClassNode));
             return resutlBytes;
         }
 

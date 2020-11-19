@@ -1,11 +1,14 @@
 package com.alibaba.bytekit.asm.instrument;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import com.alibaba.bytekit.agent.inst.Instrument;
 import com.alibaba.bytekit.asm.matcher.SimpleClassMatcher;
@@ -26,69 +29,77 @@ public class InstrumentTemplate {
     public static final String INSTRUMENT_PROPERTIES = "instrument.properties";
     public static final String INSTRUMENT = "instrument";
 
-    private ClassLoader targetClassLoader;
+    private List<File> jarFiles = new ArrayList<File>();
 
-    public InstrumentTemplate() {
-
+    public InstrumentTemplate(File... jarFiles) {
+        for (File file : jarFiles) {
+            this.jarFiles.add(file);
+        }
     }
 
-    public InstrumentParseResult build() {
+    public void addJarFiles(Collection<File> jarFiles) {
+        this.jarFiles.addAll(jarFiles);
+    }
+
+    public void addJarFile(File jarFile) {
+        this.jarFiles.add(jarFile);
+    }
+
+    public InstrumentParseResult build() throws IOException {
+        // 读取jar文件，解析出
         InstrumentParseResult result = new InstrumentParseResult();
-        try {
 
-            List<String> classes = new ArrayList<String>();
+        for (File file : jarFiles) {
+            JarFile jarFile = null;
+            try {
+                jarFile = new JarFile(file);
 
-            // 读配置文件
-            Enumeration<URL> iter = targetClassLoader.getResources(INSTRUMENT_PROPERTIES);
-            while (iter.hasMoreElements()) {
-                URL url = iter.nextElement();
+                JarEntry propertiesEntry = jarFile.getJarEntry(INSTRUMENT_PROPERTIES);
 
-                Properties properties = PropertiesUtils.loadNotNull(url);
-                String value = properties.getProperty(INSTRUMENT);
+                // 读配置文件
+                if (propertiesEntry != null) {
+                    InputStream inputStream = jarFile.getInputStream(propertiesEntry);
+                    Properties properties = PropertiesUtils.loadNotNull(inputStream);
+                    String value = properties.getProperty(INSTRUMENT);
 
-                if (value != null) {
-                    String[] strings = value.split(",");
-                    for (String s : strings) {
-                        s = s.trim();
-                        if (!s.isEmpty()) {
-                            classes.add(s);
+                    List<String> classes = new ArrayList<String>();
+
+                    if (value != null) {
+                        String[] strings = value.split(",");
+                        for (String s : strings) {
+                            s = s.trim();
+                            if (!s.isEmpty()) {
+                                classes.add(s);
+                            }
+                        }
+                    }
+
+                    // 读取出具体的 .class，再解析
+                    for (String clazz : classes) {
+                        JarEntry classEntry = jarFile.getJarEntry(clazz.replace('.', '/') + ".class");
+
+                        if (classEntry != null) {
+                            byte[] classBytes = IOUtils.getBytes(jarFile.getInputStream(classEntry));
+                            ClassNode classNode = AsmUtils.toClassNode(classBytes);
+                            List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(
+                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Class");
+
+                            if (matchClassList != null && !matchClassList.isEmpty()) {
+                                SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
+
+                                result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
+                            }
+
                         }
                     }
                 }
+
+            } finally {
+                IOUtils.close(jarFile);
             }
-
-            // 读取出具体的 .class，再解析
-            for (String clazz : classes) {
-                URL classUrl = targetClassLoader.getResource(clazz.replace('.', '/') + ".class");
-                if (classUrl != null) {
-                    byte[] classBytes = IOUtils.getBytes(classUrl.openStream());
-                    ClassNode classNode = AsmUtils.toClassNode(classBytes);
-                    List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
-                            Type.getDescriptor(Instrument.class), "Class");
-
-                    if (matchClassList != null && !matchClassList.isEmpty()) {
-                        SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-
-                        result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
-                    }
-
-                }
-            }
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         return result;
-    }
-
-    public ClassLoader getTargetClassLoader() {
-        return targetClassLoader;
-    }
-
-    public void setTargetClassLoader(ClassLoader targetClassLoader) {
-        this.targetClassLoader = targetClassLoader;
     }
 
 }

@@ -1,15 +1,16 @@
 package com.alibaba.bytekit.asm.inst;
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
+import org.zeroturnaround.zip.ZipUtil;
 
 import com.alibaba.bytekit.asm.instrument.InstrumentParseResult;
 import com.alibaba.bytekit.asm.instrument.InstrumentTemplate;
@@ -24,6 +25,8 @@ import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
  *
  */
 public class InvokeOriginTest2 {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Rule
     public TestName testName = new TestName();
@@ -37,8 +40,13 @@ public class InvokeOriginTest2 {
 
     @Before
     public void before() throws Exception {
-        InstrumentTemplate instrumentTemplate = new InstrumentTemplate();
-        instrumentTemplate.setTargetClassLoader(this.getClass().getClassLoader());
+        String file = this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
+
+        File testJarFile = folder.newFile("test.jar");
+        ZipUtil.pack(new File(file), testJarFile);
+
+        InstrumentTemplate instrumentTemplate = new InstrumentTemplate(testJarFile);
+
         InstrumentParseResult instrumentParseResult = instrumentTemplate.build();
 
         InstrumentTransformer instrumentTransformer = new InstrumentTransformer(instrumentParseResult);

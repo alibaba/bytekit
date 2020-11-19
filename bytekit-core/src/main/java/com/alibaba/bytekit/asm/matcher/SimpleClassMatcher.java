@@ -27,7 +27,10 @@ public class SimpleClassMatcher implements ClassMatcher {
     @Override
     public boolean match(ClassLoader loader, String className, Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-
+        if (className == null) {
+            return false;
+        }
+        className = className.replace('/', '.');
         if (classNames != null && classNames.contains(className)) {
             return true;
         }
