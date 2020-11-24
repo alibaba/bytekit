@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.alibaba.bytekit.utils.AsmUtils;
+
 /**
  * 
  * @author hengyunabc 2020-11-12
@@ -28,7 +30,7 @@ public class SimpleClassMatcher implements ClassMatcher {
     public boolean match(ClassLoader loader, String className, Class<?> classBeingRedefined,
             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
         if (className == null) {
-            return false;
+            className = AsmUtils.className(classfileBuffer);
         }
         className = className.replace('/', '.');
         if (classNames != null && classNames.contains(className)) {

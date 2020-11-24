@@ -586,4 +586,8 @@ public class AsmUtils {
         return (version & 0xFFFF0000) | majorVersion;
     }
 
+    public static String className(byte[] classBytes) {
+        return new ClassReader(classBytes).getClassName();
+    }
+
 }
