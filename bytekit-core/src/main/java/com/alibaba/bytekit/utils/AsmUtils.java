@@ -192,6 +192,17 @@ public class AsmUtils {
 		return result;
 	}
 
+    public static void removeLineNumbers(ClassNode classNode) {
+        for (MethodNode methodNode : classNode.methods) {
+            MethodNode result = newMethodNode(methodNode);
+            methodNode.accept(new MethodVisitor(Opcodes.ASM9, result) {
+                public void visitLineNumber(int line, Label start) {
+                }
+            });
+            replaceMethod(classNode, methodNode);
+        }
+    }
+
 	public static MethodNode findFirstMethod(Collection<MethodNode> methodNodes, String name) {
 		for (MethodNode methodNode : methodNodes) {
 			if (methodNode.name.equals(name)) {

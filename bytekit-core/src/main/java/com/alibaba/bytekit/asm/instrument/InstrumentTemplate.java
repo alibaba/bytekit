@@ -83,6 +83,8 @@ public class InstrumentTemplate {
                         if (classEntry != null) {
                             byte[] classBytes = IOUtils.getBytes(jarFile.getInputStream(classEntry));
                             ClassNode classNode = AsmUtils.toClassNode(classBytes);
+                            // 清除apm类的行号
+                            AsmUtils.removeLineNumbers(classNode);
                             List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(
                                     classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Class");
 
