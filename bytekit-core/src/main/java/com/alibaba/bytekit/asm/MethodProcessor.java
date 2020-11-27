@@ -674,7 +674,7 @@ public class MethodProcessor {
                         && methodInsnNode.desc.equals(toInlineMethodNode.desc)) {
                     // 要copy一份，否则inline多次会出问题
                     MethodNode tmpToInlineMethodNode = AsmUtils.copy(toInlineMethodNode);
-                    tmpToInlineMethodNode = AsmUtils.removeLineNumbers(tmpToInlineMethodNode);
+                    // tmpToInlineMethodNode = AsmUtils.removeLineNumbers(tmpToInlineMethodNode);
 
                     LabelNode end = new LabelNode();
                     this.methodNode.instructions.insert(methodInsnNode, end);
