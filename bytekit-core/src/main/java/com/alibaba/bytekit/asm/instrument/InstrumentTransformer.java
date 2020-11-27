@@ -35,6 +35,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
         for (InstrumentConfig config : instrumentConfigs) {
             if (config.getClassMatcher().match(loader, className, classBeingRedefined, protectionDomain,
                     classfileBuffer)) {
+
                 if (originClassNode == null) {
                     originClassNode = AsmUtils.toClassNode(classfileBuffer);
                     targetClassNode = AsmUtils.copy(originClassNode);
@@ -70,8 +71,9 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
                         AsmUtils.replaceMethod(targetClassNode, updatedMethodNode);
                     } else {
-                        // 没找到对应的，则复制函数过去
-                        AsmUtils.addMethod(targetClassNode, methodNode);
+                        // TODO 有一些特别注解标记的函数，并且在原来类里没找到对应的，则复制函数过去
+                        // 不能全部复制，比如匹配到一个接口，但已经父类里实现了接口
+                        // AsmUtils.addMethod(targetClassNode, methodNode);
                     }
                 }
                 // 处理@NewField

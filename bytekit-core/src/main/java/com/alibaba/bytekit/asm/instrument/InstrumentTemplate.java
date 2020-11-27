@@ -12,6 +12,8 @@ import java.util.jar.JarFile;
 
 import com.alibaba.bytekit.agent.inst.Instrument;
 import com.alibaba.bytekit.asm.matcher.SimpleClassMatcher;
+import com.alibaba.bytekit.asm.matcher.SimpleInterfaceMatcher;
+import com.alibaba.bytekit.asm.matcher.SimpleSubclassMatcher;
 import com.alibaba.bytekit.utils.AsmAnnotationUtils;
 import com.alibaba.bytekit.utils.AsmUtils;
 import com.alibaba.bytekit.utils.IOUtils;
@@ -86,8 +88,23 @@ public class InstrumentTemplate {
 
                             if (matchClassList != null && !matchClassList.isEmpty()) {
                                 SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-
                                 result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
+                            }
+
+                            List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationInfo(
+                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Superclass");
+
+                            if (!matchSuperclassList.isEmpty()) {
+                                SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
+                                result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
+                            }
+
+                            List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationInfo(
+                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Interface");
+
+                            if (!matchInterfaceList.isEmpty()) {
+                                SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
+                                result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
                             }
 
                         }

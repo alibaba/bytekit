@@ -14,6 +14,23 @@ import sun.misc.Unsafe;
  *
  */
 public class ClassLoaderUtils {
+    private static final FakeBootstrapClassLoader FAKEBOOTSTRAPCLASSLOADER = new FakeBootstrapClassLoader();
+
+    public static ClassLoader wrap(ClassLoader classLoader) {
+        if (classLoader != null) {
+            return classLoader;
+        }
+        return FAKEBOOTSTRAPCLASSLOADER;
+    }
+
+    private static class FakeBootstrapClassLoader extends ClassLoader {
+
+        public FakeBootstrapClassLoader() {
+            super(ClassLoader.getSystemClassLoader().getParent());
+        }
+
+    }
+
     @SuppressWarnings({ "restriction", "unchecked" })
     public static URL[] getUrls(ClassLoader classLoader) {
         if (classLoader instanceof URLClassLoader) {
