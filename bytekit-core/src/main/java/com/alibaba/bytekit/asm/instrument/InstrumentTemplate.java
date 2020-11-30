@@ -33,6 +33,8 @@ public class InstrumentTemplate {
 
     private List<File> jarFiles = new ArrayList<File>();
 
+    private List<byte[]> instrumentClassList = new ArrayList<byte[]>();
+
     public InstrumentTemplate(File... jarFiles) {
         for (File file : jarFiles) {
             this.jarFiles.add(file);
@@ -45,6 +47,10 @@ public class InstrumentTemplate {
 
     public void addJarFile(File jarFile) {
         this.jarFiles.add(jarFile);
+    }
+
+    public void addInstrumentClass(byte[] classBytes) {
+        this.instrumentClassList.add(classBytes);
     }
 
     public InstrumentParseResult build() throws IOException {
@@ -82,33 +88,7 @@ public class InstrumentTemplate {
 
                         if (classEntry != null) {
                             byte[] classBytes = IOUtils.getBytes(jarFile.getInputStream(classEntry));
-                            ClassNode classNode = AsmUtils.toClassNode(classBytes);
-                            // 清除apm类的行号
-                            AsmUtils.removeLineNumbers(classNode);
-                            List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(
-                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Class");
-
-                            if (matchClassList != null && !matchClassList.isEmpty()) {
-                                SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-                                result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
-                            }
-
-                            List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationInfo(
-                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Superclass");
-
-                            if (!matchSuperclassList.isEmpty()) {
-                                SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
-                                result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
-                            }
-
-                            List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationInfo(
-                                    classNode.visibleAnnotations, Type.getDescriptor(Instrument.class), "Interface");
-
-                            if (!matchInterfaceList.isEmpty()) {
-                                SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
-                                result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
-                            }
-
+                            parse(result, classBytes);
                         }
                     }
                 }
@@ -118,7 +98,42 @@ public class InstrumentTemplate {
             }
         }
 
+        // 处理单独设置 byte[]
+        for (byte[] classBytes : instrumentClassList) {
+            parse(result, classBytes);
+        }
+
         return result;
     }
 
+    private void parse(InstrumentParseResult result, byte[] classBytes) {
+        ClassNode classNode = AsmUtils.toClassNode(classBytes);
+        // 清除apm类的行号
+        AsmUtils.removeLineNumbers(classNode);
+        List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+                Type.getDescriptor(Instrument.class), "Class");
+
+        if (matchClassList != null && !matchClassList.isEmpty()) {
+            SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
+            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
+        }
+
+        List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+                Type.getDescriptor(Instrument.class), "Superclass");
+
+        if (!matchSuperclassList.isEmpty()) {
+            SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
+        }
+
+        List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+                Type.getDescriptor(Instrument.class), "Interface");
+
+        if (!matchInterfaceList.isEmpty()) {
+            SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
+        }
+
+        // TODO 处理 @NewField
+    }
 }
