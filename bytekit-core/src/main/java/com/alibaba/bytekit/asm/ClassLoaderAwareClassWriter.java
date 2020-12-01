@@ -31,6 +31,9 @@ public class ClassLoaderAwareClassWriter extends ClassWriter {
      */
     @Override
     protected String getCommonSuperClass(String type1, String type2) {
+        if (classLoader == null) {
+            return super.getCommonSuperClass(type1, type2);
+        }
         Class<?> c, d;
         try {
             c = Class.forName(type1.replace('/', '.'), false, classLoader);
