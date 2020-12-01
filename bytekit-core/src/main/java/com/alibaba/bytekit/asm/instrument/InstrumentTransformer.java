@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.alibaba.bytekit.asm.inst.impl.InstrumentImpl;
 import com.alibaba.bytekit.utils.AsmUtils;
+import com.alibaba.deps.org.objectweb.asm.ClassReader;
+import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
@@ -32,12 +34,14 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
         ClassNode originClassNode = null;
         ClassNode targetClassNode = null;
+        ClassReader classReader = null;
         for (InstrumentConfig config : instrumentConfigs) {
             if (config.getClassMatcher().match(loader, className, classBeingRedefined, protectionDomain,
                     classfileBuffer)) {
 
                 if (originClassNode == null) {
-                    originClassNode = AsmUtils.toClassNode(classfileBuffer);
+                    originClassNode = new ClassNode(Opcodes.ASM9);
+                    classReader = AsmUtils.toClassNode(classfileBuffer, originClassNode);
                     targetClassNode = AsmUtils.copy(originClassNode);
                 }
 
@@ -65,10 +69,11 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
                     // 从原来的类里查找对应的函数
                     MethodNode findMethod = AsmUtils.findMethod(originClassNode.methods, methodNode);
+
                     if (findMethod != null) {
                         MethodNode updatedMethodNode = InstrumentImpl.replaceInvokeOrigin(originClassNode.name,
                                 findMethod, methodNode);
-
+                        updatedMethodNode.access = findMethod.access;
                         AsmUtils.replaceMethod(targetClassNode, updatedMethodNode);
                     } else {
                         // TODO 有一些特别注解标记的函数，并且在原来类里没找到对应的，则复制函数过去
@@ -82,7 +87,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
         }
 
         if (targetClassNode != null) {
-            byte[] resutlBytes = AsmUtils.toBytes(targetClassNode);
+            byte[] resutlBytes = AsmUtils.toBytes(targetClassNode, loader, classReader);
             return resutlBytes;
         }
 

@@ -3,6 +3,7 @@ package com.alibaba.bytekit.asm.instrument;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.alibaba.bytekit.agent.inst.Instrument;
+import com.alibaba.bytekit.asm.matcher.ClassMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleClassMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleInterfaceMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleSubclassMatcher;
@@ -135,5 +137,18 @@ public class InstrumentTemplate {
         }
 
         // TODO 处理 @NewField
+    }
+
+    public static List<Class<?>> matchedClass(Instrumentation instrumentation, InstrumentConfig instrumentConfig) {
+        List<Class<?>> result = new ArrayList<Class<?>>();
+
+        ClassMatcher classMatcher = instrumentConfig.getClassMatcher();
+        for (Class<?> clazz : instrumentation.getAllLoadedClasses()) {
+            if (classMatcher.match(null, clazz.getName(), clazz, null, null)) {
+                result.add(clazz);
+            }
+        }
+
+        return result;
     }
 }
