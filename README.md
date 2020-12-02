@@ -107,9 +107,11 @@ bytecode kit for java.
 
 **这种方式可以随意插入代码，非常灵活。**
 
+参考增强Dubbo Filter的示例： [[查看源文件](bytekit-core/src/test/java/com/alibaba/bytekit/asm/inst/DubboFilter_APM.java)]
+
 ## 示例
 
-以`ByteKitDemo.java`为例说明，[[查看源文件](src/test/java/com/example/ByteKitDemo.java)]。
+以`ByteKitDemo.java`为例说明，[[查看源文件](bytekit-core/src/test/java/com/example/ByteKitDemo.java)]。
 
 ### 1. 定义注入点和Binding数据
 
