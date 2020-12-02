@@ -48,11 +48,12 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 // 匹配上，则进行字节码替换处理
                 ClassNode instrumentClassNode = config.getInstrumentClassNode();
 
-                // TODO 如果名字一样，则不用修改？
-                byte[] renameClass = AsmUtils.renameClass(AsmUtils.toBytes(instrumentClassNode),
-                        Type.getObjectType(originClassNode.name).getClassName());
-
-                instrumentClassNode = AsmUtils.toClassNode(renameClass);
+                // 如果 @Instrument 的字节码的类名 和 目标字节码的类名不一样，则修改为一致
+                if (!originClassNode.name.equals(instrumentClassNode.name)) {
+                    byte[] renameClass = AsmUtils.renameClass(AsmUtils.toBytes(instrumentClassNode),
+                            Type.getObjectType(originClassNode.name).getClassName());
+                    instrumentClassNode = AsmUtils.toClassNode(renameClass);
+                }
 
                 // 查找 @Instrument 字节码里的 method，如果在原来的有同样的，则处理替换；如果没有，则复制过去
                 for (MethodNode methodNode : instrumentClassNode.methods) {
