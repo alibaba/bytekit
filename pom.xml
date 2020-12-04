@@ -52,6 +52,8 @@
 
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
 
+        <slf4j.version>1.7.30</slf4j.version>
+
         <!-- Test -->
         <junit.version>4.13.1</junit.version>
 
@@ -64,6 +66,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.benf</groupId>
                 <artifactId>cfr</artifactId>
