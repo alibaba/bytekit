@@ -330,6 +330,9 @@ public class AsmUtils {
 		return methodNode.name != null && methodNode.name.equals("<init>");
 	}
 
+    public static boolean isNative(MethodNode methodNode) {
+        return (methodNode.access & Opcodes.ACC_NATIVE) != 0;
+    }
 
 	public String[] getParameterNames(MethodNode methodNode) {
 		Type[] argumentTypes = Type.getArgumentTypes(methodNode.desc);
