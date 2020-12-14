@@ -17,7 +17,6 @@ package com.alibaba.bytekit.log;
 
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 
@@ -618,12 +617,12 @@ public abstract class Loggers {
 
         @Override
         public Logger getLogger(String name) {
-            return consoleLoggers.computeIfAbsent(name, new Function<String, Logger>() {
-                @Override
-                public Logger apply(String n) {
-                    return new ConsoleLogger(n, verbose);
-                }
-            });
+            Logger logger = consoleLoggers.get(name);
+            if (logger == null) {
+                logger = new ConsoleLogger(name, verbose);
+                consoleLoggers.put(name, logger);
+            }
+            return logger;
         }
     }
 

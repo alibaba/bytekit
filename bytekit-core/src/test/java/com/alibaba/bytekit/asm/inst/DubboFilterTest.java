@@ -18,6 +18,7 @@ import com.alibaba.bytekit.asm.instrument.InstrumentParseResult;
 import com.alibaba.bytekit.asm.instrument.InstrumentTemplate;
 import com.alibaba.bytekit.asm.instrument.InstrumentTransformer;
 import com.alibaba.bytekit.utils.AsmUtils;
+import com.alibaba.bytekit.utils.JavaVersionUtils;
 import com.alibaba.bytekit.utils.VerifyUtils;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 
@@ -35,6 +36,12 @@ public class DubboFilterTest {
     public OutputCapture capture = new OutputCapture();
 
     private Object object;
+
+    @Before
+    public void beforeMethod() {
+        // dubbo need jdk8
+        org.junit.Assume.assumeTrue(JavaVersionUtils.isGreaterThanJava7());
+    }
 
     @Before
     public void before() throws Exception {
