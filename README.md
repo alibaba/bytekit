@@ -229,5 +229,13 @@ public static class ByteKitDemo.Sample {
 ```
 
 
+## 开发相关
+
+deploy到远程仓库：
+
+```bash
+mvn clean deploy -DskipTests -P release
+```
+
 ## License
 Apache License V2
