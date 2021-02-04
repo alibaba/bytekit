@@ -235,6 +235,7 @@ public class MethodProcessor {
 
     public TryCatchBlock initTryCatchBlock(String exception) {
         if( this.tryCatchBlock == null) {
+            fixTryCatchBlockRange(methodNode);
             this.tryCatchBlock = new TryCatchBlock(methodNode, exception);
             this.methodNode.instructions.insertBefore(this.getEnterInsnNode(), tryCatchBlock.getStartLabelNode());
             this.methodNode.instructions.insert(this.getLastInsnNode(), tryCatchBlock.getEndLabelNode());
@@ -245,6 +246,38 @@ public class MethodProcessor {
             tryCatchBlock.sort();
         }
         return tryCatchBlock;
+    }
+
+    private void fixTryCatchBlockRange(MethodNode methodNode) {
+        //fix try-catch block start position in constructor for SpringCGLIB
+        if (isConstructor() && methodNode.tryCatchBlocks.size() > 0) {
+            AbstractInsnNode enterInsnNode = this.getEnterInsnNode();
+            //get labelNode before entryNode
+            LabelNode labelNodeBeforeEnterNode = null;
+            if (enterInsnNode.getPrevious() instanceof LabelNode) {
+                labelNodeBeforeEnterNode = (LabelNode) enterInsnNode.getPrevious();
+            } else {
+                labelNodeBeforeEnterNode = new LabelNode();
+                methodNode.instructions.insertBefore(enterInsnNode, labelNodeBeforeEnterNode);
+            }
+            //if any try-catch block start before labelNodeBeforeEnterNode, then reset it
+            for (TryCatchBlockNode tryCatchBlock : methodNode.tryCatchBlocks) {
+                if (isBeforeNode(tryCatchBlock.start, labelNodeBeforeEnterNode)){
+                    tryCatchBlock.start = labelNodeBeforeEnterNode;
+                }
+            }
+        }
+    }
+
+    private boolean isBeforeNode(AbstractInsnNode aheadNode, AbstractInsnNode rearNode) {
+        AbstractInsnNode node = rearNode;
+        while (node != null) {
+            if (node == aheadNode) {
+                return true;
+            }
+            node = node.getPrevious();
+        }
+        return false;
     }
 
     AbstractInsnNode findInitConstructorInstruction() {
