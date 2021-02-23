@@ -66,6 +66,12 @@
             <version>1.5.9.RELEASE</version>
             <scope>test</scope>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.minidev</groupId>
+                    <artifactId>accessors-smart</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.taobao.arthas</groupId>
@@ -73,6 +79,14 @@
             <version>3.4.3</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.3.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
