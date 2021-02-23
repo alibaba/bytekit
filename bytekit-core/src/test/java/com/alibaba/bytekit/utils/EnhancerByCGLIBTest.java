@@ -59,17 +59,6 @@ public class EnhancerByCGLIBTest {
 
     @Test
     public void test() {
-
-        boolean cglibError = false;
-        try {
-            CglibDemo.newInstance(Student.class);
-        } catch (Throwable e) {
-            // e.printStackTrace();
-            cglibError = true;
-        }
-
-        Assertions.assertThat(cglibError).isTrue();
-
         Instrumentation instrumentation = ByteBuddyAgent.install();
 
         ClassFileTransformer transformer = new ClassFileTransformer() {
@@ -77,23 +66,45 @@ public class EnhancerByCGLIBTest {
             @Override
             public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                     ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-                if (AsmUtils.isEnhancerByCGLIB(className)) {
-                    ClassNode classNode = AsmUtils.toClassNode(classfileBuffer);
-                    for (MethodNode methodNode : classNode.methods) {
-                        if (AsmUtils.isConstructor(methodNode)) {
-                            AsmUtils.fixConstructorExceptionTable(methodNode);
-                        }
-                    }
-                    return AsmUtils.toBytes(classNode);
+
+                ClassNode classNode = AsmUtils.toClassNode(classfileBuffer);
+
+                // support jdk7 test. cglib 3.3.0 only support jdk8
+                if (AsmUtils.getMajorVersion(classNode.version) > 51) {
+                    classNode.version = AsmUtils.setMajorVersion(classNode.version, 51);
                 }
 
-                return null;
+                // only process Person
+                if (className.contains(Person.class.getSimpleName())) {
+                    if (AsmUtils.isEnhancerByCGLIB(className)) {
+                        for (MethodNode methodNode : classNode.methods) {
+                            if (AsmUtils.isConstructor(methodNode)) {
+                                AsmUtils.fixConstructorExceptionTable(methodNode);
+                            }
+                        }
+                        return AsmUtils.toBytes(classNode);
+                    }
+                }
+
+                return AsmUtils.toBytes(classNode);
             }
 
         };
 
         try {
+
             instrumentation.addTransformer(transformer, true);
+
+            boolean cglibError = false;
+            try {
+                CglibDemo.newInstance(Student.class);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                cglibError = true;
+            }
+
+            Assertions.assertThat(cglibError).isTrue();
+
             CglibDemo.newInstance(Person.class);
         } finally {
             instrumentation.removeTransformer(transformer);
