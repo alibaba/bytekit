@@ -606,6 +606,10 @@ public class AsmUtils {
         return new ClassReader(classBytes).getClassName();
     }
 
+    public static boolean isEnhancerByCGLIB(String className) {
+        return className.contains("$$EnhancerBySpringCGLIB$$") || className.contains("$$EnhancerByCGLIB$$");
+    }
+
     private static boolean isBeforeNode(AbstractInsnNode aheadNode, AbstractInsnNode rearNode) {
         AbstractInsnNode node = rearNode;
         while (node != null) {
