@@ -24,9 +24,11 @@ import com.alibaba.deps.org.objectweb.asm.commons.Remapper;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
+import com.alibaba.deps.org.objectweb.asm.tree.LabelNode;
 import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
+import com.alibaba.deps.org.objectweb.asm.tree.TryCatchBlockNode;
 import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
 import com.alibaba.deps.org.objectweb.asm.util.ASMifier;
 import com.alibaba.deps.org.objectweb.asm.util.TraceClassVisitor;
@@ -604,4 +606,32 @@ public class AsmUtils {
         return new ClassReader(classBytes).getClassName();
     }
 
+    private static boolean isBeforeNode(AbstractInsnNode aheadNode, AbstractInsnNode rearNode) {
+        AbstractInsnNode node = rearNode;
+        while (node != null) {
+            if (node == aheadNode) {
+                return true;
+            }
+            node = node.getPrevious();
+        }
+        return false;
+    }
+
+    public static void fixConstructorExceptionTable(MethodNode methodNode) {
+        // fix try-catch block start position in constructor for SpringCGLIB
+        if (isConstructor(methodNode) && methodNode.tryCatchBlocks.size() > 0) {
+            AbstractInsnNode enterInsnNode = findInitConstructorInstruction(methodNode);
+            if (enterInsnNode == null) {
+                return;
+            }
+            LabelNode newStarLabel = new LabelNode();
+            methodNode.instructions.insertBefore(enterInsnNode, newStarLabel);
+            // if any try-catch block start before newStarLabel, then reset it
+            for (TryCatchBlockNode tryCatchBlock : methodNode.tryCatchBlocks) {
+                if (isBeforeNode(tryCatchBlock.start, newStarLabel)) {
+                    tryCatchBlock.start = newStarLabel;
+                }
+            }
+        }
+    }
 }
