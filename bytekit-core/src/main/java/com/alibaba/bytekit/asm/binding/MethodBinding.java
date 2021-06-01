@@ -2,6 +2,7 @@ package com.alibaba.bytekit.asm.binding;
 
 import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
+import com.alibaba.deps.org.objectweb.asm.tree.FieldInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
 import com.alibaba.bytekit.asm.MethodProcessor;
@@ -27,18 +28,25 @@ public class MethodBinding  extends Binding{
         Type[] argumentTypes = Type.getMethodType(methodProcessor.getMethodNode().desc).getArgumentTypes();
         
         AsmOpUtils.push(instructions, argumentTypes.length);
-        AsmOpUtils.newArray(instructions, Type.getType(Class.class));
+        AsmOpUtils.newArray(instructions, AsmOpUtils.CLASS_TYPE);
 
         for(int i = 0; i < argumentTypes.length; ++i) {
             AsmOpUtils.dup(instructions);
 
             AsmOpUtils.push(instructions, i);
-            
-            AsmOpUtils.ldc(instructions, argumentTypes[i]);
-            AsmOpUtils.arrayStore(instructions, Type.getType(Class.class));
+
+            if (AsmOpUtils.needBox(argumentTypes[i])) {
+                // 相当于 Boolean.TYPE;
+                AsmOpUtils.getStatic(instructions, AsmOpUtils.getBoxedType(argumentTypes[i]), "TYPE",
+                        AsmOpUtils.CLASS_TYPE);
+            } else {
+                AsmOpUtils.ldc(instructions, argumentTypes[i]);
+            }
+
+            AsmOpUtils.arrayStore(instructions, AsmOpUtils.CLASS_TYPE);
         }
         
-        MethodInsnNode declaredMethodInsnNode = new MethodInsnNode(Opcodes.INVOKEVIRTUAL, Type.getType(Class.class).getInternalName(),
+        MethodInsnNode declaredMethodInsnNode = new MethodInsnNode(Opcodes.INVOKEVIRTUAL, AsmOpUtils.CLASS_TYPE.getInternalName(),
                 "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;", false);
         instructions.add(declaredMethodInsnNode);
     }

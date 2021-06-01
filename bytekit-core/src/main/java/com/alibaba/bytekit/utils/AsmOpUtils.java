@@ -38,6 +38,8 @@ public class AsmOpUtils {
 
 	public static final Type OBJECT_TYPE = Type.getObjectType("java/lang/Object");
 
+	public static final Type CLASS_TYPE = Type.getObjectType("java/lang/Class");
+
 	public static final Type OBJECT_ARRAY_TYPE = Type.getType(Object[].class);
 
 	public static final Type STRING_TYPE = Type.getObjectType("java/lang/String");
