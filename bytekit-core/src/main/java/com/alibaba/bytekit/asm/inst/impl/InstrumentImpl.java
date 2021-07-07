@@ -117,7 +117,8 @@ public class InstrumentImpl {
         }
 
         MethodProcessor methodProcessor = new MethodProcessor(originOwner, apmMethodNode);
-        methodProcessor.inline(originOwner, originMethodNode);
+        // 要保留origin method的line number
+        methodProcessor.inline(originOwner, originMethodNode, false);
 
         return apmMethodNode;
     }

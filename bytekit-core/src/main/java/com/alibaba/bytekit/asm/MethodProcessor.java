@@ -656,12 +656,16 @@ public class MethodProcessor {
         return locationFilter;
     }
 
+    public void inline(String owner, MethodNode toInlineMethodNode) {
+        inline(owner, toInlineMethodNode, true);
+    }
+
     /**
      * TODO 可以考虑实现修改值的功能，原理是传入的 args实际转化为一个stack上的slot，只要在inline之后，把 stack上面的对应的slot保存到想要保存的位置就可以了。
      * @param owner
      * @param tmpToInlineMethodNode
      */
-    public void inline(String owner, MethodNode toInlineMethodNode) {
+    public void inline(String owner, MethodNode toInlineMethodNode, boolean removeLineNumber) {
 
         ListIterator<AbstractInsnNode> originMethodIter = this.methodNode.instructions.iterator();
 
@@ -674,7 +678,9 @@ public class MethodProcessor {
                         && methodInsnNode.desc.equals(toInlineMethodNode.desc)) {
                     // 要copy一份，否则inline多次会出问题
                     MethodNode tmpToInlineMethodNode = AsmUtils.copy(toInlineMethodNode);
-                    // tmpToInlineMethodNode = AsmUtils.removeLineNumbers(tmpToInlineMethodNode);
+                    if (removeLineNumber) {
+                        tmpToInlineMethodNode = AsmUtils.removeLineNumbers(tmpToInlineMethodNode);
+                    }
 
                     LabelNode end = new LabelNode();
                     this.methodNode.instructions.insert(methodInsnNode, end);
