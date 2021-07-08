@@ -129,7 +129,7 @@ public class InlineWhileTest {
         try {
             new Sample().hello("abc", true);
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         String actual = capture.toString();

@@ -99,7 +99,7 @@ public class EnhancerByCGLIBTest {
             try {
                 CglibDemo.newInstance(Student.class);
             } catch (Throwable e) {
-                e.printStackTrace();
+                // e.printStackTrace();
                 cglibError = true;
             }
 
