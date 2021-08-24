@@ -54,6 +54,7 @@ public class ByteKitDemo {
                 @Binding.MethodName String methodName,
                 @Binding.MethodDesc String methodDesc) {
             System.out.println("atEnter, args[0]: " + args[0]);
+            args[0] = "spy " + args[0];
         }
 
         @AtExit(inline = true)

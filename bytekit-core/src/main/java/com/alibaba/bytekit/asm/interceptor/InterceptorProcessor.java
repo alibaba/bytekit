@@ -2,6 +2,7 @@ package com.alibaba.bytekit.asm.interceptor;
 
 import java.util.List;
 
+import com.alibaba.bytekit.asm.binding.ArgsBinding;
 import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
@@ -171,7 +172,8 @@ public class InterceptorProcessor {
                 Class<?> forName = classLoader.loadClass(Type.getObjectType(interceptorMethodConfig.getOwner()).getClassName());
                 MethodNode toInlineMethodNode = AsmUtils.findMethod(AsmUtils.loadClass(forName).methods, interceptorMethodConfig.getMethodName(), interceptorMethodConfig.getMethodDesc());
 
-                methodProcessor.inline(interceptorMethodConfig.getOwner(), toInlineMethodNode);
+                int argsIndex = argsIndex(bindingContext);
+                methodProcessor.inline(interceptorMethodConfig.getOwner(), toInlineMethodNode, argsIndex);
             }
             if(exceptionHandlerConfig != null && exceptionHandlerConfig.isInline()) {
 //                Class<?> forName = Class.forName(Type.getObjectType(exceptionHandlerConfig.getOwner()).getClassName());
@@ -187,6 +189,24 @@ public class InterceptorProcessor {
         }
         
         return locations;
+    }
+
+    /**
+     * 获取argsBinding对应参数所在槽的index,或者说offset更合适
+     * 如果没有argsBinding则返回-1
+     * @return argsBinding所在槽的index。
+     */
+    private int argsIndex(BindingContext bindingContext){
+        List<Binding> bindings = interceptorMethodConfig.getBindings();
+        int index = 0;
+        for (Binding binding : bindings) {
+            Type bindingType = binding.getType(bindingContext);
+            index += bindingType.getSize();
+            if (binding instanceof ArgsBinding) {
+                return index;
+            }
+        }
+        return -1;
     }
 
     private void errorHandler(MethodProcessor methodProcessor, InsnList insnList) {

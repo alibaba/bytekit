@@ -113,13 +113,13 @@ public class MethodProcessor {
     private Map<String, LocalVariableNode> invokeReturnVariableNodeMap = new HashMap<String, LocalVariableNode>();
 
     private TryCatchBlock tryCatchBlock = null;
-    
+
     private LocationFilter locationFilter = new DefaultLocationFilter();
 
     public MethodProcessor(final ClassNode classNode, final MethodNode methodNode) {
         this(classNode, methodNode, false);
     }
-    
+
     public MethodProcessor(final ClassNode classNode, final MethodNode methodNode, LocationFilter locationFilter) {
         this(classNode, methodNode, false);
         this.locationFilter = locationFilter;
@@ -656,17 +656,55 @@ public class MethodProcessor {
         return locationFilter;
     }
 
-    public void inline(String owner, MethodNode toInlineMethodNode) {
-        inline(owner, toInlineMethodNode, true);
+    /**
+     * 根据argsIndex将args数组里的值回写到目标方法的入参
+     * @param argsIndex argsBinding对应参数args所在槽的index,或者说offset更合适
+     * @return 回写指令
+     */
+    private void writeBackArgs(InsnList toInsert, int argsIndex) {
+        Type[] argumentTypes = Type.getArgumentTypes(getMethodNode().desc);
+        // 省去传参调用获取type，直接拿
+        Type argsBindingType =  AsmOpUtils.OBJECT_ARRAY_TYPE;
+
+        int slotNum = nextLocals - 1;
+        argsIndex = slotNum + argsIndex;
+        // load
+        for (int arrayIndex = 0; arrayIndex < argumentTypes.length; arrayIndex++) {
+            AsmOpUtils.loadVar(toInsert, argsBindingType, argsIndex);
+            AsmOpUtils.push(toInsert, arrayIndex);
+            AsmOpUtils.arrayLoad(toInsert, AsmOpUtils.OBJECT_TYPE);
+        }
+        // store
+        for (int i = argumentTypes.length - 1; i >= 0; i--) {
+            AsmOpUtils.unbox(toInsert, argumentTypes[i]);
+            int argIndex = getArgIndex(argumentTypes, i);
+            AsmOpUtils.storeVar(toInsert, argumentTypes[i], argIndex);
+        }
     }
+
+    public void inline(String owner, MethodNode toInlineMethodNode) {
+        inline(owner, toInlineMethodNode, true, -1);
+    }
+    public void inline(String owner, MethodNode toInlineMethodNode, int argsIndex) {
+        inline(owner, toInlineMethodNode, true, argsIndex);
+    }
+    public void inline(String owner, MethodNode toInlineMethodNode, boolean removeLineNumber){
+        inline(owner, toInlineMethodNode, removeLineNumber, -1);
+    }
+
+
 
     /**
      * TODO 可以考虑实现修改值的功能，原理是传入的 args实际转化为一个stack上的slot，只要在inline之后，把 stack上面的对应的slot保存到想要保存的位置就可以了。
      * @param owner
      * @param tmpToInlineMethodNode
      */
-    public void inline(String owner, MethodNode toInlineMethodNode, boolean removeLineNumber) {
-
+    public void inline(String owner, MethodNode toInlineMethodNode, boolean removeLineNumber, int argsIndex) {
+        // 需要先生成回写指令
+        InsnList writeBackInstructions = new InsnList();
+        if (argsIndex >= 0) {
+            writeBackArgs(writeBackInstructions, argsIndex);
+        }
         ListIterator<AbstractInsnNode> originMethodIter = this.methodNode.instructions.iterator();
 
         while(originMethodIter.hasNext()) {
@@ -684,6 +722,8 @@ public class MethodProcessor {
 
                     LabelNode end = new LabelNode();
                     this.methodNode.instructions.insert(methodInsnNode, end);
+                    // 每一次return的goto之后都可以写回
+                    this.methodNode.instructions.insert(end, writeBackInstructions);
 
                     InsnList instructions = new InsnList();
 
