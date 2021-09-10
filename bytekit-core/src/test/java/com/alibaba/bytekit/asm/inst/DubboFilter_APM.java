@@ -17,6 +17,7 @@ import com.alibaba.bytekit.agent.inst.InstrumentApi;
 public abstract class DubboFilter_APM {
 
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        DubboUtils.print(invoker);
         System.err.println("invoker class: " + this.getClass().getName());
         Result result = InstrumentApi.invokeOrigin();
 

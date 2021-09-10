@@ -1,6 +1,5 @@
 package com.alibaba.bytekit.asm.instrument;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +10,13 @@ import java.util.List;
  */
 public class InstrumentParseResult {
 
-    List<InstrumentConfig> instrumentConfigs = new ArrayList<InstrumentConfig>();
+    private List<InstrumentConfig> instrumentConfigs = new ArrayList<InstrumentConfig>();
 
-    ClassFileTransformer transformer;
+    private List<DefineConfig> defineConfigs = new ArrayList<DefineConfig>();
+
+    public void addDefineClass(String className, byte[] classBytes) {
+        this.defineConfigs.add(new DefineConfig(classBytes, className));
+    }
 
     public void addInstrumentConfig(InstrumentConfig config) {
         this.instrumentConfigs.add(config);
@@ -25,6 +28,14 @@ public class InstrumentParseResult {
 
     public void setInstrumentConfigs(List<InstrumentConfig> instrumentConfigs) {
         this.instrumentConfigs = instrumentConfigs;
+    }
+
+    public List<DefineConfig> getDefineConfigs() {
+        return defineConfigs;
+    }
+
+    public void setDefineConfigs(List<DefineConfig> defineConfigs) {
+        this.defineConfigs = defineConfigs;
     }
 
 }

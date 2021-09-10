@@ -59,7 +59,7 @@ public class DubboFilterTest {
         ClassNode originClassNode = AsmUtils.loadClass(ConsumerContextFilter.class);
         byte[] bytes = AsmUtils.toBytes(originClassNode);
 
-        byte[] transformedBytes = instrumentTransformer.transform(null, ConsumerContextFilter.class.getName(),
+        byte[] transformedBytes = instrumentTransformer.transform(ConsumerContextFilter.class.getClassLoader(), ConsumerContextFilter.class.getName(),
                 ConsumerContextFilter.class, null, bytes);
 
         VerifyUtils.asmVerify(transformedBytes);

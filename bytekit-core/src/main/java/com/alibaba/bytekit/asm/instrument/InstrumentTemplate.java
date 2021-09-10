@@ -19,6 +19,7 @@ import com.alibaba.bytekit.asm.matcher.SimpleSubclassMatcher;
 import com.alibaba.bytekit.utils.AsmAnnotationUtils;
 import com.alibaba.bytekit.utils.AsmUtils;
 import com.alibaba.bytekit.utils.IOUtils;
+import com.alibaba.bytekit.utils.Pair;
 import com.alibaba.bytekit.utils.PropertiesUtils;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
@@ -32,10 +33,16 @@ public class InstrumentTemplate {
 
     public static final String INSTRUMENT_PROPERTIES = "instrument.properties";
     public static final String INSTRUMENT = "instrument";
+    /**
+     * 通常是工具类，需要在运行时define到用户的ClassLoader里
+     */
+    public static final String DEFINE = "define";
 
     private List<File> jarFiles = new ArrayList<File>();
 
     private List<byte[]> instrumentClassList = new ArrayList<byte[]>();
+
+    private List<byte[]> defineClassList = new ArrayList<byte[]>();
 
     public InstrumentTemplate(File... jarFiles) {
         for (File file : jarFiles) {
@@ -55,6 +62,10 @@ public class InstrumentTemplate {
         this.instrumentClassList.add(classBytes);
     }
 
+    public void addDefineClass(byte[] classBytes) {
+        this.defineClassList.add(classBytes);
+    }
+
     public InstrumentParseResult build() throws IOException {
         // 读取jar文件，解析出
         InstrumentParseResult result = new InstrumentParseResult();
@@ -70,28 +81,13 @@ public class InstrumentTemplate {
                 if (propertiesEntry != null) {
                     InputStream inputStream = jarFile.getInputStream(propertiesEntry);
                     Properties properties = PropertiesUtils.loadNotNull(inputStream);
-                    String value = properties.getProperty(INSTRUMENT);
 
-                    List<String> classes = new ArrayList<String>();
-
-                    if (value != null) {
-                        String[] strings = value.split(",");
-                        for (String s : strings) {
-                            s = s.trim();
-                            if (!s.isEmpty()) {
-                                classes.add(s);
-                            }
-                        }
+                    for (Pair<String, byte[]> pair : readClassBytes(properties, INSTRUMENT, jarFile)) {
+                        parse(result, pair.second);
                     }
 
-                    // 读取出具体的 .class，再解析
-                    for (String clazz : classes) {
-                        JarEntry classEntry = jarFile.getJarEntry(clazz.replace('.', '/') + ".class");
-
-                        if (classEntry != null) {
-                            byte[] classBytes = IOUtils.getBytes(jarFile.getInputStream(classEntry));
-                            parse(result, classBytes);
-                        }
+                    for (Pair<String, byte[]> pair : readClassBytes(properties, DEFINE, jarFile)) {
+                        result.addDefineClass(pair.first, pair.second);
                     }
                 }
 
@@ -105,6 +101,34 @@ public class InstrumentTemplate {
             parse(result, classBytes);
         }
 
+        return result;
+    }
+
+    private List<Pair<String, byte[]>> readClassBytes(Properties properties, String key, JarFile jarFile)
+            throws IOException {
+        List<Pair<String, byte[]>> result = new ArrayList<Pair<String, byte[]>>();
+        String value = properties.getProperty(key);
+        List<String> classes = new ArrayList<String>();
+
+        if (value != null) {
+            String[] strings = value.split(",");
+            for (String s : strings) {
+                s = s.trim();
+                if (!s.isEmpty()) {
+                    classes.add(s);
+                }
+            }
+        }
+
+        // 读取出具体的 .class，再解析
+        for (String clazz : classes) {
+            JarEntry classEntry = jarFile.getJarEntry(clazz.replace('.', '/') + ".class");
+
+            if (classEntry != null) {
+                byte[] classBytes = IOUtils.getBytes(jarFile.getInputStream(classEntry));
+                result.add(Pair.of(clazz, classBytes));
+            }
+        }
         return result;
     }
 

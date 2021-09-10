@@ -6,7 +6,10 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 import com.alibaba.bytekit.asm.inst.impl.InstrumentImpl;
+import com.alibaba.bytekit.log.Logger;
+import com.alibaba.bytekit.log.Loggers;
 import com.alibaba.bytekit.utils.AsmUtils;
+import com.alibaba.bytekit.utils.ReflectUtils;
 import com.alibaba.deps.org.objectweb.asm.ClassReader;
 import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
@@ -19,7 +22,7 @@ import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
  *
  */
 public class InstrumentTransformer implements ClassFileTransformer {
-
+    private final Logger logger = Loggers.getLogger(getClass());
     private InstrumentParseResult instrumentParseResult;
 
     public InstrumentTransformer(InstrumentParseResult instrumentParseResult) {
@@ -88,6 +91,22 @@ public class InstrumentTransformer implements ClassFileTransformer {
         }
 
         if (targetClassNode != null) {
+            // TODO 支持 bootstrap classloader?
+            if (loader != null) {
+                List<DefineConfig> defineConfigs = instrumentParseResult.getDefineConfigs();
+                for (DefineConfig defineConfig : defineConfigs) {
+                    try {
+                        ReflectUtils.defineClass(defineConfig.getClassName(), defineConfig.getClassBytes(), loader);
+                    } catch (Throwable e) {
+                        if (logger.isInfoEnabled()) {
+                            logger.info("transform class: " + className + " error! can not define class: "
+                                    + defineConfig.getClassName(), e);
+                        }
+                        return null;
+                    }
+                }
+            }
+
             byte[] resutlBytes = AsmUtils.toBytes(targetClassNode, loader, classReader);
             return resutlBytes;
         }
