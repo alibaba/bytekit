@@ -98,6 +98,14 @@ public class InstrumentTransformer implements ClassFileTransformer {
                     try {
                         ReflectUtils.defineClass(defineConfig.getClassName(), defineConfig.getClassBytes(), loader);
                     } catch (Throwable e) {
+                        Throwable cause = e.getCause();
+                        if (cause instanceof LinkageError) {
+                            String errorMessage = cause.getMessage();
+                            if (errorMessage != null && errorMessage.contains("duplicate class definition")) {
+                                // ignore
+                                continue;
+                            }
+                        }
                         if (logger.isInfoEnabled()) {
                             logger.info("transform class: " + className + " error! can not define class: "
                                     + defineConfig.getClassName(), e);
