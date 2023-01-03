@@ -638,4 +638,11 @@ public class AsmUtils {
             }
         }
     }
+
+    public static void fixMajorVersion(ClassNode classNode) {
+        // https://github.com/alibaba/arthas/issues/1223 , V1_5 的major version是49
+        if (AsmUtils.getMajorVersion(classNode.version) < 49) {
+            classNode.version = AsmUtils.setMajorVersion(classNode.version, 49);
+        }
+    }
 }

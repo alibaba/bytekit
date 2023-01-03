@@ -115,6 +115,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 }
             }
 
+            AsmUtils.fixMajorVersion(targetClassNode);
             byte[] resutlBytes = AsmUtils.toBytes(targetClassNode, loader, classReader);
             return resutlBytes;
         }
