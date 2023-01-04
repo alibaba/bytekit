@@ -13,19 +13,26 @@ import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
  * 一个 Inst ，对应一个 matcher，然后一个ClassLoader，可能读取出来有多个 Properties。 一个
  * Properties里可能有多个 Inst。然后它们是同一个 Transformer ？ 有类进来，就先用 matcher来匹配，有匹上的，就处理
  * </pre>
+ * 
  * @author hengyunabc 2020-11-12
  *
  */
 public class InstrumentConfig {
+    private boolean updateMajorVersion;
 
     private ClassNode instrumentClassNode;
 
     private ClassMatcher classMatcher;
 
     public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher) {
+        this(instrumentClassNode, classMatcher, false);
+    }
+
+    public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher, boolean updateMajorVersion) {
         super();
         this.instrumentClassNode = instrumentClassNode;
         this.classMatcher = classMatcher;
+        this.updateMajorVersion = updateMajorVersion;
     }
 
     public ClassNode getInstrumentClassNode() {
@@ -44,4 +51,11 @@ public class InstrumentConfig {
         this.classMatcher = classMatcher;
     }
 
+    public boolean isUpdateMajorVersion() {
+        return updateMajorVersion;
+    }
+
+    public void setUpdateMajorVersion(boolean updateMajorVersion) {
+        this.updateMajorVersion = updateMajorVersion;
+    }
 }

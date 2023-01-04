@@ -16,6 +16,8 @@ import com.alibaba.bytekit.asm.matcher.ClassMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleClassMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleInterfaceMatcher;
 import com.alibaba.bytekit.asm.matcher.SimpleSubclassMatcher;
+import com.alibaba.bytekit.log.Logger;
+import com.alibaba.bytekit.log.Loggers;
 import com.alibaba.bytekit.utils.AsmAnnotationUtils;
 import com.alibaba.bytekit.utils.AsmUtils;
 import com.alibaba.bytekit.utils.IOUtils;
@@ -30,7 +32,7 @@ import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
  *
  */
 public class InstrumentTemplate {
-
+    private final Logger logger = Loggers.getLogger(getClass());
     public static final String INSTRUMENT_PROPERTIES = "instrument.properties";
     public static final String INSTRUMENT = "instrument";
     /**
@@ -134,30 +136,42 @@ public class InstrumentTemplate {
 
     private void parse(InstrumentParseResult result, byte[] classBytes) {
         ClassNode classNode = AsmUtils.toClassNode(classBytes);
+
+        if (!AsmUtils.fitCurrentJvmMajorVersion(classNode)) {
+            logger.error(
+                    "The current jvm major version is {}, less than the Instrument class major version: {}, ignore this class: {}",
+                    AsmUtils.currentJvmMajorVersion(), AsmUtils.getMajorVersion(classNode.version), classNode.name);
+            return;
+        }
+
         // 清除apm类的行号
         AsmUtils.removeLineNumbers(classNode);
-        List<String> matchClassList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+
+        boolean updateMajorVersion = Boolean.parseBoolean((String) AsmAnnotationUtils.queryAnnotationValue(classNode.visibleAnnotations,
+                Type.getDescriptor(Instrument.class), "updateMajorVersion"));
+
+        List<String> matchClassList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
                 Type.getDescriptor(Instrument.class), "Class");
 
         if (matchClassList != null && !matchClassList.isEmpty()) {
             SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher, updateMajorVersion));
         }
 
-        List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+        List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
                 Type.getDescriptor(Instrument.class), "Superclass");
 
         if (!matchSuperclassList.isEmpty()) {
             SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion));
         }
 
-        List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationInfo(classNode.visibleAnnotations,
+        List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
                 Type.getDescriptor(Instrument.class), "Interface");
 
         if (!matchInterfaceList.isEmpty()) {
             SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion));
         }
 
         // TODO 处理 @NewField

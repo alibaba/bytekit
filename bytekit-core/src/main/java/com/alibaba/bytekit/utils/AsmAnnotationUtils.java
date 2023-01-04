@@ -1,6 +1,7 @@
 package com.alibaba.bytekit.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,9 +14,47 @@ import com.alibaba.deps.org.objectweb.asm.tree.AnnotationNode;
  */
 public class AsmAnnotationUtils {
 
-    public static List<String> queryAnnotationInfo(List<AnnotationNode> annotations, String annotationType,
+    /**
+     * 从注解中查找单个值，即使有重复注解也只返回第一个值
+     * 
+     * @param <T>
+     * @param annotations
+     * @param annotationType
+     * @param key
+     * @return
+     */
+    public static <T> T queryAnnotationValue(List<AnnotationNode> annotations, String annotationType, String key) {
+        if (annotations != null) {
+            for (AnnotationNode annotationNode : annotations) {
+                if (annotationNode.desc.equals(annotationType)) {
+                    if (annotationNode.values != null) {
+                        Iterator<Object> iterator = annotationNode.values.iterator();
+                        while (iterator.hasNext()) {
+                            String name = (String) iterator.next();
+                            Object value = iterator.next();
+                            if (key.equals(name)) {
+                                return (T) value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 从注解中查找所有的值，如果有重复注解会返回所有值
+     * 
+     * @param <T>
+     * @param annotations
+     * @param annotationType
+     * @param key
+     * @return
+     */
+    public static <T> List<T> queryAnnotationValues(List<AnnotationNode> annotations, String annotationType,
             String key) {
-        List<String> result = new ArrayList<String>();
+        List<T> result = new ArrayList<T>();
         if (annotations != null) {
             for (AnnotationNode annotationNode : annotations) {
                 if (annotationNode.desc.equals(annotationType)) {
@@ -25,12 +64,33 @@ public class AsmAnnotationUtils {
                             String name = (String) iterator.next();
                             Object values = iterator.next();
                             if (key.equals(name)) {
-                                result.addAll((List<String>) values);
+                                result.add((T) values);
                             }
                         }
                     }
                 }
             }
+        }
+        return result;
+    }
+
+    /**
+     * <pre>
+     * 从注解中查找 数组 字段的值，返回非null 的 List。 比如 `@Test(names = {"abc", "xyz"})` ，返回 List包含
+     * "abc", "xyz" 两个元素
+     * 
+     * <pre>
+     * 
+     * @param annotations
+     * @param annotationType
+     * @param key
+     * @return
+     */
+    public static <T> List<T> queryAnnotationArrayValue(List<AnnotationNode> annotations, String annotationType,
+            String key) {
+        List<T> result = queryAnnotationValue(annotations, annotationType, key);
+        if (result == null) {
+            result = Collections.emptyList();
         }
         return result;
     }

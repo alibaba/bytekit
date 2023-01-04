@@ -40,6 +40,7 @@ import com.alibaba.bytekit.asm.ClassLoaderAwareClassWriter;
  *
  */
 public class AsmUtils {
+    static int MAJOR_VERSION = -1;
 
 	public static ClassNode loadClass(Class<?> clazz) throws IOException {
 		String resource = clazz.getName().replace('.', '/') + ".class";
@@ -644,5 +645,57 @@ public class AsmUtils {
         if (AsmUtils.getMajorVersion(classNode.version) < 49) {
             classNode.version = AsmUtils.setMajorVersion(classNode.version, 49);
         }
+    }
+
+    /**
+     * 比如两份字节码的 major version，如果 from 的比 to 的要高，则设置 to 的 major version 为 from的 major
+     * version
+     * 
+     * @param from
+     * @param to
+     */
+    public static void updateMajorVersion(ClassNode from, ClassNode to) {
+        int fromVersion = AsmUtils.getMajorVersion(from.version);
+        int toVersion = AsmUtils.getMajorVersion(to.version);
+        if (fromVersion > toVersion) {
+            to.version = AsmUtils.setMajorVersion(to.version, fromVersion);
+        }
+    }
+
+    /**
+     * 如果成功获取，返回大于 0 的值
+     * @return
+     */
+    public static int currentJvmMajorVersion() {
+        if (MAJOR_VERSION > 0) {
+            return MAJOR_VERSION;
+        }
+        if (MAJOR_VERSION < 0) {
+            try {
+                InputStream resourceAsStream = ClassLoader.getSystemClassLoader()
+                        .getResourceAsStream(String.class.getName().replace('.', '/') + ".class");
+                byte[] bytes = IOUtils.getBytes(resourceAsStream);
+                ClassNode classNode = AsmUtils.toClassNode(bytes);
+                MAJOR_VERSION = AsmUtils.getMajorVersion(classNode.version);
+            } catch (Throwable e) {
+                // ignore
+                MAJOR_VERSION = 0;
+            }
+        }
+        return MAJOR_VERSION;
+    }
+
+    /**
+     * 检查当前的字节码版本是否适配
+     * 
+     * @param classNode
+     * @return
+     */
+    public static boolean fitCurrentJvmMajorVersion(ClassNode classNode) {
+        int currentJvmMajorVersion = currentJvmMajorVersion();
+        if (currentJvmMajorVersion > 0 && currentJvmMajorVersion < AsmUtils.getMajorVersion(classNode.version)) {
+            return false;
+        }
+        return true;
     }
 }

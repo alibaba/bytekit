@@ -51,6 +51,10 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 // 匹配上，则进行字节码替换处理
                 ClassNode instrumentClassNode = config.getInstrumentClassNode();
 
+                if(config.isUpdateMajorVersion()) {
+                    AsmUtils.updateMajorVersion(instrumentClassNode, targetClassNode);
+                }
+
                 // 如果 @Instrument 的字节码的类名 和 目标字节码的类名不一样，则修改为一致
                 if (!originClassNode.name.equals(instrumentClassNode.name)) {
                     byte[] renameClass = AsmUtils.renameClass(AsmUtils.toBytes(instrumentClassNode),

@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -28,10 +29,12 @@ public class AsmAnnotationUtilsTest {
     public @interface AdviceInfo {
 
         public String[] adviceInfos();
+
+        public String name() default "";
     }
 
     @Service
-    @AdviceInfo(adviceInfos = { "xxxx", "yyy" })
+    @AdviceInfo(adviceInfos = { "xxxx", "yyy" }, name = "testAdvice")
     static class AAA {
 
         @AdviceInfo(adviceInfos = { "mmm", "yyy" })
@@ -53,24 +56,48 @@ public class AsmAnnotationUtilsTest {
 
         ClassNode classNodeB = AsmUtils.loadClass(BBB.class);
 
-        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationInfo(classNodeA.visibleAnnotations,
+        String name = AsmAnnotationUtils.queryAnnotationValue(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "name");
+        Assertions.assertThat(name).isEqualTo("testAdvice");
+
+        List<String> names = AsmAnnotationUtils.queryAnnotationValues(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "name");
+        Assertions.assertThat(names).containsExactly("testAdvice");
+
+        List<String> adviceInfos = AsmAnnotationUtils.queryAnnotationValue(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "adviceInfos");
+        Assertions.assertThat(adviceInfos).containsExactly("xxxx", "yyy");
+
+        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationValue(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "notExist")).isNull();
+
+        List<List<String>> allAdviceInfos = AsmAnnotationUtils.queryAnnotationValues(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "adviceInfos");
+
+        Assertions.assertThat(allAdviceInfos).size().isEqualTo(1);
+        Assertions.assertThat(allAdviceInfos.get(0)).containsExactly("xxxx", "yyy");
+
+        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationArrayValue(classNodeA.visibleAnnotations,
+                Type.getDescriptor(AdviceInfo.class), "notExist")).isNotNull().isEmpty();
+
+        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationArrayValue(classNodeA.visibleAnnotations,
                 Type.getDescriptor(AdviceInfo.class), "adviceInfos")).isEqualTo(Arrays.asList("xxxx", "yyy"));
 
         AsmAnnotationUtils.addAnnotationInfo(classNodeA.visibleAnnotations, Type.getDescriptor(AdviceInfo.class),
                 "adviceInfos", "fff");
 
         Assertions
-                .assertThat(AsmAnnotationUtils.queryAnnotationInfo(classNodeA.visibleAnnotations,
+                .assertThat(AsmAnnotationUtils.queryAnnotationArrayValue(classNodeA.visibleAnnotations,
                         Type.getDescriptor(AdviceInfo.class), "adviceInfos"))
                 .isEqualTo(Arrays.asList("xxxx", "yyy", "fff"));
 
-        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationInfo(classNodeB.visibleAnnotations,
+        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationArrayValue(classNodeB.visibleAnnotations,
                 Type.getDescriptor(AdviceInfo.class), "adviceInfos")).isEmpty();
 
         AsmAnnotationUtils.addAnnotationInfo(classNodeB.visibleAnnotations, Type.getDescriptor(AdviceInfo.class),
                 "adviceInfos", "fff");
 
-        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationInfo(classNodeB.visibleAnnotations,
+        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationArrayValue(classNodeB.visibleAnnotations,
                 Type.getDescriptor(AdviceInfo.class), "adviceInfos")).isEqualTo(Arrays.asList("fff"));
 
     }

@@ -28,4 +28,14 @@ public @interface Instrument {
     Class<? extends Throwable> suppress() default Throwable.class;
 
     Class<?> suppressHandler() default Void.class;
+
+    /**
+     * <pre>
+     * 据 Instrument 类的字节码的 java major version 更新应用的字节码 major version。
+     * 因为Instrument 类可能会使用新的语法，所以为了兼容，应用的字节码 major version 需要更新
+     * </pre>
+     * 
+     * @return
+     */
+    String updateMajorVersion() default "true";
 }

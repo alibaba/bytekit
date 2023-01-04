@@ -1,6 +1,7 @@
 package com.alibaba.bytekit.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -171,5 +172,21 @@ public class AsmUtilsTest {
         AsmUtils.getMajorVersion(newVersion);
 
         Assertions.assertThat(AsmUtils.getMajorVersion(newVersion)).isEqualTo(58);
+    }
+
+    @Test
+    public void testCurrentJvmMajorVersion() throws Exception {
+        int currentJvmMajorVersion = AsmUtils.currentJvmMajorVersion();
+        Assertions.assertThat(currentJvmMajorVersion).isGreaterThan(AsmUtils.getMajorVersion(Opcodes.V1_5));
+    }
+
+    @Test
+    public void testFitCurrentJvmMajorVersion() {
+        int currentJvmMajorVersion = AsmUtils.currentJvmMajorVersion();
+        int newVersion = AsmUtils.setMajorVersion(currentJvmMajorVersion, currentJvmMajorVersion + 1);
+
+        ClassNode node = new ClassNode();
+        node.version = newVersion;
+        Assertions.assertThat(AsmUtils.fitCurrentJvmMajorVersion(node)).isFalse();
     }
 }
