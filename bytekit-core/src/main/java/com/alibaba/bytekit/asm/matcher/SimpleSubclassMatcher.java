@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.alibaba.bytekit.asm.meta.ClassMetaService;
+import com.alibaba.bytekit.utils.AsmUtils;
 import com.alibaba.bytekit.utils.ClassLoaderUtils;
 
 /**
@@ -16,16 +17,28 @@ import com.alibaba.bytekit.utils.ClassLoaderUtils;
  */
 public class SimpleSubclassMatcher implements ClassMatcher {
 
-    Set<String> classNames = new HashSet<String>();
+    private Set<String> classNames = new HashSet<String>();
+
+    /**
+     * 保存另一份转换为 internal 的数据，避免每次match转换
+     */
+    private Set<String> internalClassNames = new HashSet<String>();
 
     public SimpleSubclassMatcher(String... className) {
         for (String name : className) {
-            this.classNames.add(name);
+            add(name);
         }
     }
 
     public SimpleSubclassMatcher(Collection<String> names) {
-        this.classNames.addAll(names);
+        for (String name : names) {
+            add(name);
+        }
+    }
+
+    private void add(String name) {
+        classNames.add(name);
+        internalClassNames.add(AsmUtils.internalClassName(name));
     }
 
     @Override
@@ -39,7 +52,7 @@ public class SimpleSubclassMatcher implements ClassMatcher {
 
             List<String> allSuperNames = ClassMetaService.allSuperNames(loader, className, classfileBuffer);
             for (String superName : allSuperNames) {
-                if (classNames.contains(superName)) {
+                if (internalClassNames.contains(superName)) {
                     return true;
                 }
             }
