@@ -42,12 +42,23 @@ public class ClassLoaderUtils {
         // jdk9
         if (classLoader.getClass().getName().startsWith("jdk.internal.loader.ClassLoaders$")) {
             try {
-                Field field = Unsafe.class.getDeclaredField("theUnsafe");
+                Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
                 field.setAccessible(true);
-                Unsafe unsafe = (Unsafe) field.get(null);
+                sun.misc.Unsafe unsafe = (sun.misc.Unsafe) field.get(null);
 
-                // jdk.internal.loader.ClassLoaders.AppClassLoader.ucp
-                Field ucpField = classLoader.getClass().getDeclaredField("ucp");
+                Class<?> ucpOwner = classLoader.getClass();
+                Field ucpField = null;
+
+                // jdk 9~15: jdk.internal.loader.ClassLoaders$AppClassLoader.ucp
+                // jdk 16~17: jdk.internal.loader.BuiltinClassLoader.ucp
+                while (ucpField == null && !ucpOwner.getName().equals("java.lang.Object")) {
+                    try {
+                        ucpField = ucpOwner.getDeclaredField("ucp");
+                    } catch (NoSuchFieldException ex) {
+                        ucpOwner = ucpOwner.getSuperclass();
+                    }
+                }
+
                 long ucpFieldOffset = unsafe.objectFieldOffset(ucpField);
                 Object ucpObject = unsafe.getObject(classLoader, ucpFieldOffset);
 
