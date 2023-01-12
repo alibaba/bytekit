@@ -20,6 +20,9 @@ public class IOUtils {
     }
 
     public static String toString(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
@@ -43,6 +46,9 @@ public class IOUtils {
      * @throws java.io.IOException
      */
     public static byte[] getBytes(InputStream input) throws IOException {
+        if (input == null) {
+            return null;
+        }
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         copy(input, result);
         result.close();

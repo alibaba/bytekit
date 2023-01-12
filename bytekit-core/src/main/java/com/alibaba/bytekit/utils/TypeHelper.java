@@ -21,7 +21,7 @@
 *
 * @authors Andrew Dinn
 */
-package com.alibaba.bytekit.asm;
+package com.alibaba.bytekit.utils;
 
 /**
  * Helpoer class providing static methods for manipulating type and class names,

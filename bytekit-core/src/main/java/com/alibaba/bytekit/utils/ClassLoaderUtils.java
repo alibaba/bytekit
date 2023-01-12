@@ -1,5 +1,7 @@
 package com.alibaba.bytekit.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -61,5 +63,31 @@ public class ClassLoaderUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * internalName 是 java/lang/String 的形式
+     * @param classLoader
+     * @param internalName
+     * @return
+     */
+    public static byte[] readBytecodeByName(ClassLoader classLoader, String internalName) {
+        if (internalName == null || classLoader == null) {
+            return null;
+        }
+        try {
+            InputStream inputStream = classLoader.getResourceAsStream(internalName + ".class");
+            return IOUtils.getBytes(inputStream);
+        } catch (IOException e) {
+            // ignore
+        }
+        return null;
+    }
+
+    public static byte[] readBytecode(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+        return readBytecodeByName(clazz.getClassLoader(), AsmUtils.internalClassName(clazz));
     }
 }

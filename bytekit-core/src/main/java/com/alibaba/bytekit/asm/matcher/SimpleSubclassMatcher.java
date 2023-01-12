@@ -3,10 +3,11 @@ package com.alibaba.bytekit.asm.matcher;
 import java.security.ProtectionDomain;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.alibaba.bytekit.asm.meta.ClassMetaService;
 import com.alibaba.bytekit.utils.ClassLoaderUtils;
-import com.alibaba.deps.org.objectweb.asm.ClassReader;
 
 /**
  * 
@@ -35,25 +36,11 @@ public class SimpleSubclassMatcher implements ClassMatcher {
         if (classBeingRedefined != null) { // 在retransform 时，可以直接判断
             return match(classBeingRedefined);
         } else {
-            // 读取出具体的 类名，还有父类名， 如果有匹配，则返回 true，没有，就返回 false
-            ClassReader reader = new ClassReader(classfileBuffer);
-            String clazzName = reader.getClassName();
-            String superName = reader.getSuperName();
 
-            if (classNames != null && classNames.contains(clazzName.replace('/', '.'))) {
-                return true;
-            }
-
-            while (!superName.equals("java/lang/Object")) {
+            List<String> allSuperNames = ClassMetaService.allSuperNames(loader, className, classfileBuffer);
+            for (String superName : allSuperNames) {
                 if (classNames.contains(superName)) {
                     return true;
-                }
-                try {
-                    Class<?> superClass = loader.loadClass(superName.replace('/', '.'));
-                    return match(superClass);
-                } catch (ClassNotFoundException e) {
-                    // ignore
-                    return false;
                 }
             }
         }
