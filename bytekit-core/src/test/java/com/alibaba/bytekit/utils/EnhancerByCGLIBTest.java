@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
@@ -24,6 +25,12 @@ import net.sf.cglib.transform.impl.UndeclaredThrowableStrategy;
  *
  */
 public class EnhancerByCGLIBTest {
+
+    @Before
+    public void beforeMethod() {
+        // 大于jdk 17不能正常运行
+        org.junit.Assume.assumeTrue(!JavaVersionUtils.isGreaterThanJava17());
+    }
 
     static class CglibDemo implements MethodInterceptor {
 

@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.alibaba.bytekit.asm.meta.ClassMetaService;
+import com.alibaba.bytekit.utils.AsmUtils;
 import com.alibaba.bytekit.utils.ClassLoaderUtils;
-import com.alibaba.deps.org.objectweb.asm.ClassReader;
-import com.alibaba.deps.org.objectweb.asm.Opcodes;
 
 /**
  * 
@@ -16,16 +16,28 @@ import com.alibaba.deps.org.objectweb.asm.Opcodes;
  */
 public class SimpleInterfaceMatcher implements ClassMatcher {
 
-    Set<String> interfaces = new HashSet<String>();
+    private Set<String> interfaces = new HashSet<String>();
+
+    /**
+     * 保存另一份转换为 internal 的数据，避免每次match转换
+     */
+    private Set<String> internalInterfaces = new HashSet<String>();
 
     public SimpleInterfaceMatcher(String... interfaces) {
         for (String name : interfaces) {
-            this.interfaces.add(name);
+            add(name);
         }
     }
 
     public SimpleInterfaceMatcher(Collection<String> interfaces) {
-        this.interfaces.addAll(interfaces);
+        for (String name : interfaces) {
+            add(name);
+        }
+    }
+
+    private void add(String name) {
+        interfaces.add(name);
+        internalInterfaces.add(AsmUtils.internalClassName(name));
     }
 
     @Override
@@ -33,42 +45,16 @@ public class SimpleInterfaceMatcher implements ClassMatcher {
             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
         loader = ClassLoaderUtils.wrap(loader);
 
-        if (classBeingRedefined != null) { // 在retransform 时，可以直接判断
+        if (classBeingRedefined != null) {
+            /**
+             * 在retransform 时，类已经加载好，可以直接判断 TODO 哪种判断方式更快？
+             */
             return match(classBeingRedefined);
         } else {
-            // 读取出具体的 类名，还有父类名， 如果有匹配，则返回 true，没有，就返回 false
-            ClassReader reader = new ClassReader(classfileBuffer);
-            String clazzName = reader.getClassName();
-            String superName = reader.getSuperName();
-            String[] interfacesArray = reader.getInterfaces();
-
-            // 如果是接口，则没有需要处理的地方
-            if ((reader.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
-                return false;
-            }
-
-            if (interfaces != null && interfaces.contains(clazzName.replace('/', '.'))) {
-                return true;
-            }
-
-            for (String i : interfacesArray) {
-                try {
-                    Class<?> interfaceClass = loader.loadClass(i.replace('/', '.'));
-                    if (matchInterface(interfaceClass)) {
-                        return true;
-                    }
-                } catch (ClassNotFoundException e) {
-                    // ignore
-                }
-            }
-            if (!"java/lang/Object".equals(superName)) {
-                try {
-                    Class<?> superClass = loader.loadClass(superName.replace('/', '.'));
-                    if (matchClass(superClass)) {
-                        return true;
-                    }
-                } catch (ClassNotFoundException e) {
-                    // ignore
+            Set<String> allInterfaces = ClassMetaService.allInterfaces(loader, className, classfileBuffer);
+            for (String i : internalInterfaces) {
+                if (allInterfaces.contains(i)) {
+                    return true;
                 }
             }
         }
