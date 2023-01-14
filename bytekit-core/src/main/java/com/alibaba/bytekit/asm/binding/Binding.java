@@ -403,6 +403,21 @@ public abstract class Binding {
         }
     }
 
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @java.lang.annotation.Target(ElementType.PARAMETER)
+    @BindingParserHandler(parser = LineBeforeBindingParser.class)
+    public static @interface LineBefore {
+
+    }
+
+    public static class LineBeforeBindingParser implements BindingParser {
+        @Override
+        public Binding parse(Annotation annotation) {
+            return new LineBeforeBinding();
+        }
+    }
+
 
     @Documented
     @Retention(RetentionPolicy.RUNTIME)

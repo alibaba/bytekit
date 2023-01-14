@@ -137,6 +137,35 @@ public abstract class Location {
     }
 
     /**
+     * location identifying a method line before trigger point
+     */
+    public static class LineBeforeLocation extends Location {
+        /**
+         * the line at which the trigger point should be inserted before
+         */
+        private int beforeLine;
+
+        public LineBeforeLocation(AbstractInsnNode insnNode, int beforeLine) {
+            super(insnNode);
+            this.beforeLine = beforeLine;
+        }
+
+        public LineBeforeLocation(AbstractInsnNode insnNode, int beforeLine, boolean whenComplete, boolean filtered) {
+            super(insnNode, whenComplete, filtered);
+            this.beforeLine = beforeLine;
+        }
+
+        public int getBeforeLine() {
+            return beforeLine;
+        }
+
+        public LocationType getLocationType() {
+            return LocationType.LINE;
+        }
+
+    }
+
+    /**
      * location identifying a generic access trigger point
      */
     private static abstract class AccessLocation extends Location {
