@@ -1,11 +1,7 @@
 package com.alibaba.bytekit.asm.location;
 
 import com.alibaba.deps.org.objectweb.asm.Type;
-import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
-import com.alibaba.deps.org.objectweb.asm.tree.FieldInsnNode;
-import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
-import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
-import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.*;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.binding.BindingContext;
 import com.alibaba.bytekit.asm.binding.StackSaver;
@@ -23,6 +19,18 @@ public abstract class Location {
     
     boolean stackNeedSave = false;
 
+    /**
+     * the location should be filtered by {@link com.alibaba.bytekit.asm.location.filter.LocationFilter}
+     * 1.enable when {@link Location#enableFilteredMark} is true.
+     * 2.assign value in {@link LocationMatcher} before using.
+     */
+    boolean filtered = false;
+
+    /**
+     * control the {@link Location#filtered} enable or disable to avoid misapply
+     */
+    boolean enableFilteredMark = false;
+
     public Location(AbstractInsnNode insnNode) {
         this(insnNode, false);
     }
@@ -30,6 +38,25 @@ public abstract class Location {
     public Location(AbstractInsnNode insnNode, boolean whenComplete) {
         this.insnNode = insnNode;
         this.whenComplete = whenComplete;
+    }
+
+    public Location(AbstractInsnNode insnNode, boolean whenComplete, boolean filtered) {
+        this.insnNode = insnNode;
+        this.whenComplete = whenComplete;
+        this.enableFilteredMark = true;
+        this.filtered = filtered;
+    }
+
+    public boolean determineFiltered() {
+        if (enableFilteredMark){
+            return filtered;
+        }
+        //throw exp when enableFilteredMark is not assigned to avoid misapply.
+        throw new IllegalStateException("enableFilteredMark is false. filtered is not useful. please check!");
+    }
+
+    public boolean isEnableFilteredMark() {
+        return enableFilteredMark;
     }
 
     public boolean isWhenComplete() {
