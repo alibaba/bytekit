@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * find the location before line.
  * 1.will only return instance of type {@link  com.alibaba.bytekit.asm.location.Location.LineBeforeLocation}.
- * 2.will return first method exit location when beforeLine equals -1 .
+ * 2.will only return first method exit location when beforeLine equals -1 .
  * 3.will only return first matched {@link LineNumberNode}'s previous node even there are multi matched {@link LineNumberNode} in method.
  * 4.you should add {@link LocationType#EXIT} and {@link LocationType#LINE} in {@link LocationFilter} if you want to avoid the repeat intercept.
  */
@@ -52,7 +52,7 @@ public class LineBeforeLocationMatcher implements LocationMatcher {
                     LineNumberNode lineNumberNode = (LineNumberNode) insnNode;
                     if (matchLine(lineNumberNode.line)) {
                         boolean filtered = !locationFilter.allow(lineNumberNode, LocationType.LINE, false);
-                        //目前因为如果直接返回lineNumberNode，增强完之后会导致行号丢失，暂时没找到原因，因此取上一个节点
+                        //目前因为如果直接返回lineNumberNode，按当前逻辑增强完之后会导致行号丢失，暂时没找到原因，因此向上取一个节点
                         Location location = new Location.LineBeforeLocation(lineNumberNode.getPrevious(), beforeLine, false, filtered);
                         locations.add(location);
                         //由于会存在多个相同行号的情况，这里只取第一个行号
@@ -70,6 +70,9 @@ public class LineBeforeLocationMatcher implements LocationMatcher {
         return line == beforeLine;
     }
 
+    /**
+     * same with {@link com.alibaba.bytekit.asm.location.ExitLocationMatcher}
+     */
     public boolean matchExit(InsnNode node) {
         switch (node.getOpcode()) {
             case Opcodes.RETURN: // empty stack
