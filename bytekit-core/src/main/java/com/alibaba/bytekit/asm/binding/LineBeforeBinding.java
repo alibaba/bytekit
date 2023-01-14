@@ -11,6 +11,10 @@ public class LineBeforeBinding extends Binding {
 
     }
 
+    /**
+     * 匹配指定的{@link LineBeforeLocation}使用
+     * support Location.LineBeforeLocation only
+     */
     @Override
     public void pushOntoStack(InsnList instructions, BindingContext bindingContext) {
         Location location = bindingContext.getLocation();

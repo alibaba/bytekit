@@ -23,7 +23,7 @@ public class LineBeforeLocationMatcher implements LocationMatcher {
 
     public LineBeforeLocationMatcher(int beforeLine) {
         if (beforeLine < -1) {
-            throw new IllegalArgumentException("targetLine must grater than -1");
+            throw new IllegalArgumentException("beforeLine must grater than -1");
         }
         this.beforeLine = beforeLine;
     }
