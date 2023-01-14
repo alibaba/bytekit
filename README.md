@@ -68,6 +68,9 @@ bytecode kit for java.
 * `@Binding.Monitor` 同步块里监控的对象
 
 
+* `@Binding.LineBefore` 仅搭配`LineBeforeLocation`进行使用，其值为`LineBeforeLocation`中指定的`beforeLine`
+
+
 ### 3. 可编程的异常处理
 
 * `@ExceptionHandler` 在插入的增强代码，可以用`try/catch`块包围起来
