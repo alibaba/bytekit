@@ -82,6 +82,8 @@ public abstract class Binding {
     @java.lang.annotation.Target(ElementType.PARAMETER)
     @BindingParserHandler(parser = LocalVarsBindingParser.class)
     public static @interface LocalVars {
+
+        String excludePattern() default "";
         
         boolean optional() default false;
 
@@ -89,6 +91,10 @@ public abstract class Binding {
     public static class LocalVarsBindingParser implements BindingParser {
         @Override
         public Binding parse(Annotation annotation) {
+            if (annotation instanceof LocalVars){
+                LocalVars LocalVars = (LocalVars) annotation;
+                return new LocalVarsBinding(LocalVars.excludePattern());
+            }
             return new LocalVarsBinding();
         }
         
@@ -99,13 +105,19 @@ public abstract class Binding {
     @java.lang.annotation.Target(ElementType.PARAMETER)
     @BindingParserHandler(parser = LocalVarNamesBindingParser.class)
     public static @interface LocalVarNames {
-        
+
+        String excludePattern() default "";
+
         boolean optional() default false;
 
     }
     public static class LocalVarNamesBindingParser implements BindingParser {
         @Override
         public Binding parse(Annotation annotation) {
+            if (annotation instanceof LocalVarNames){
+                LocalVarNames localVarNames = (LocalVarNames) annotation;
+                return new LocalVarNamesBinding(localVarNames.excludePattern());
+            }
             return new LocalVarNamesBinding();
         }
         
