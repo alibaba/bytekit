@@ -21,6 +21,7 @@ import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.commons.ClassRemapper;
 import com.alibaba.deps.org.objectweb.asm.commons.JSRInlinerAdapter;
 import com.alibaba.deps.org.objectweb.asm.commons.Remapper;
+import com.alibaba.deps.org.objectweb.asm.commons.SimpleRemapper;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
@@ -87,38 +88,22 @@ public class AsmUtils {
         return writer.toByteArray();
     }
 
+    public static ClassNode renameClass(ClassNode classNode, final String newClassName) {
+        final String internalName = newClassName.replace('.', '/');
+        ClassNode renamedNode = new ClassNode();
+        ClassRemapper remapper = new ClassRemapper(renamedNode, new SimpleRemapper(classNode.name, internalName));
+        classNode.accept(remapper);
+        return renamedNode;
+    }
+
     public static byte[] renameClass(byte[] classBytes, final String newClassName) {
         final String internalName = newClassName.replace('.', '/');
-
         ClassReader reader = new ClassReader(classBytes);
         ClassWriter writer = new ClassWriter(0);
 
-        class RenameRemapper extends Remapper {
-            private String className;
-
-            @Override
-            public String map(String typeName) {
-                if (typeName.equals(className)) {
-                    return internalName;
-                }
-                return super.map(typeName);
-            }
-
-            public void setClassName(String className) {
-                this.className = className;
-            }
-        }
-
-        final RenameRemapper renameRemapper = new RenameRemapper();
-        ClassRemapper adapter = new ClassRemapper(writer, renameRemapper) {
-            @Override
-            public void visit(final int version, final int access, final String name, final String signature,
-                    final String superName, final String[] interfaces) {
-                renameRemapper.setClassName(name);
-                super.visit(version, access, name, signature, superName, interfaces);
-            }
-        };
-        reader.accept(adapter, ClassReader.EXPAND_FRAMES);
+        final SimpleRemapper renameRemapper = new SimpleRemapper(reader.getClassName(), internalName);
+        ClassRemapper adapter = new ClassRemapper(writer, renameRemapper);
+        reader.accept(adapter, 0);
         writer.visitEnd();
         return writer.toByteArray();
     }
