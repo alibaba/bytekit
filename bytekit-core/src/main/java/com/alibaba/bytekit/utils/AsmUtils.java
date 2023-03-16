@@ -20,7 +20,6 @@ import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.commons.ClassRemapper;
 import com.alibaba.deps.org.objectweb.asm.commons.JSRInlinerAdapter;
-import com.alibaba.deps.org.objectweb.asm.commons.Remapper;
 import com.alibaba.deps.org.objectweb.asm.commons.SimpleRemapper;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
@@ -33,7 +32,7 @@ import com.alibaba.deps.org.objectweb.asm.tree.TryCatchBlockNode;
 import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
 import com.alibaba.deps.org.objectweb.asm.util.ASMifier;
 import com.alibaba.deps.org.objectweb.asm.util.TraceClassVisitor;
-import com.alibaba.bytekit.asm.ClassLoaderAwareClassWriter;
+import com.alibaba.bytekit.asm.ClassMetaClassWriter;
 
 /**
  * 
@@ -77,7 +76,7 @@ public class AsmUtils {
      */
     public static byte[] toBytes(ClassNode classNode, ClassLoader classLoader, ClassReader classReader) {
         int flags = ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS;
-        ClassWriter writer = new ClassLoaderAwareClassWriter(classReader, flags, classLoader);
+        ClassWriter writer = new ClassMetaClassWriter(classReader, flags, classLoader);
         classNode.accept(writer);
         return writer.toByteArray();
     }

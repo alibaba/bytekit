@@ -8,6 +8,7 @@ import com.alibaba.deps.org.objectweb.asm.ClassWriter;
  * @author hengyunabc 2020-05-29
  *
  */
+@Deprecated
 public class ClassLoaderAwareClassWriter extends ClassWriter {
     private ClassLoader classLoader;
 

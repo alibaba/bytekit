@@ -41,13 +41,13 @@ public class ClassMetaService {
      */
     public static Set<String> allInterfaces(ClassLoader loader, String internalClassName, byte[] classfileBuffer) {
         ClassMetaCache classMetaCache = ClassMetaService.findClassMetaCache(loader);
-        ClassMeta classMeta = classMetaCache.findAndTryLoadClassMeta(internalClassName, classfileBuffer);
+        ClassMeta classMeta = classMetaCache.findAndTryLoadClassMeta(internalClassName, classfileBuffer, loader);
         return classMeta.allInterfaces(classMetaCache);
     }
 
     public static List<String> allSuperNames(ClassLoader loader, String internalClassName, byte[] classfileBuffer) {
         ClassMetaCache classMetaCache = ClassMetaService.findClassMetaCache(loader);
-        ClassMeta classMeta = classMetaCache.findAndTryLoadClassMeta(internalClassName, classfileBuffer);
+        ClassMeta classMeta = classMetaCache.findAndTryLoadClassMeta(internalClassName, classfileBuffer, loader);
         return classMeta.allSuperNames(classMetaCache);
     }
 }
