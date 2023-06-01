@@ -45,6 +45,8 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 if (originClassNode == null) {
                     originClassNode = new ClassNode(Opcodes.ASM9);
                     classReader = AsmUtils.toClassNode(classfileBuffer, originClassNode);
+                    // fix https://github.com/alibaba/one-java-agent/issues/51
+                    originClassNode = AsmUtils.removeJSRInstructions(originClassNode);
                     targetClassNode = AsmUtils.copy(originClassNode);
                 }
 
