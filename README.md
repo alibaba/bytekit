@@ -42,7 +42,7 @@ bytecode kit for java.
 ### 2. 动态的Binding
 
 * `@Binding.This` this对象
-* `@@Binding.Class` Class对象
+* `@Binding.Class` Class对象
 * `@Binding.Method` 函数调用的 Method 对象
 * `@Binding.MethodName` 函数的名字
 * `@Binding.MethodDesc` 函数的desc
