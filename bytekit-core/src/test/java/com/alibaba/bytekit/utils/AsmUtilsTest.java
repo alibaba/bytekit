@@ -139,6 +139,20 @@ public class AsmUtilsTest {
     }
 
     @Test
+    public void testRenameClassClassNode() throws Exception {
+        ClassNode classNode = AsmUtils.loadClass(AsmUtilsTest.class);
+
+        classNode = AsmUtils.renameClass(classNode, "com/test/Test/FFFFFFF");
+
+        byte[] renameClass = AsmUtils.toBytes(classNode);
+
+        VerifyUtils.asmVerify(renameClass);
+        Object object = VerifyUtils.instanceVerity(renameClass);
+
+        Assertions.assertThat(object.getClass().getName()).isEqualTo("com.test.Test.FFFFFFF");
+    }
+
+    @Test
     public void testGetMajorVersion() throws Exception {
         Assertions.assertThat(AsmUtils.getMajorVersion(Opcodes.V1_1)).isEqualTo(45);
         Assertions.assertThat(AsmUtils.getMajorVersion(Opcodes.V1_2)).isEqualTo(46);

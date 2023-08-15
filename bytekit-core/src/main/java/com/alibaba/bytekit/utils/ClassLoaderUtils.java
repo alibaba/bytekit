@@ -99,6 +99,11 @@ public class ClassLoaderUtils {
         if (clazz == null) {
             return null;
         }
-        return readBytecodeByName(clazz.getClassLoader(), AsmUtils.internalClassName(clazz));
+        // 支持 java.lang.String 等由 BootstrapClassLoader 加载的类
+        ClassLoader classLoader = clazz.getClassLoader();
+        if (classLoader == null) {
+            classLoader = ClassLoader.getSystemClassLoader().getParent();
+        }
+        return readBytecodeByName(classLoader, AsmUtils.internalClassName(clazz));
     }
 }

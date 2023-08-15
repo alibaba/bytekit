@@ -36,7 +36,7 @@ public class ClassMetaCache {
         if (classMeta == null) {
             byte[] bytes = ClassLoaderUtils.readBytecodeByName(classLoader, internalClassName);
             if (bytes != null) {
-                classMeta = ClassMeta.fromByteCode(bytes);
+                classMeta = ClassMeta.fromByteCode(bytes, classLoader);
                 ClassMeta existed = classMetaMap.putIfAbsent(internalClassName, classMeta);
                 if (existed != null) {
                     classMeta = existed;
@@ -50,7 +50,7 @@ public class ClassMetaCache {
         return classMeta;
     }
 
-    public ClassMeta findAndTryLoadClassMeta(String internalClassName, byte[] classfileBuffer) {
+    public ClassMeta findAndTryLoadClassMeta(String internalClassName, byte[] classfileBuffer, ClassLoader classLoader) {
         ClassMeta classMeta = null;
         if (internalClassName != null) {
             classMeta = classMetaMap.get(internalClassName);
@@ -60,7 +60,7 @@ public class ClassMetaCache {
          * 可能之前查找失败被标记为 NO_EXIST_CLASSMETA ，如果显式传入字节码，则从字节码里提取
          */
         if (classMeta == null || classMeta == NO_EXIST_CLASSMETA) {
-            classMeta = ClassMeta.fromByteCode(classfileBuffer);
+            classMeta = ClassMeta.fromByteCode(classfileBuffer, classLoader);
             ClassMeta existed = classMetaMap.putIfAbsent(classMeta.getInternalClassName(), classMeta);
             if (existed != null) {
                 classMeta = existed;

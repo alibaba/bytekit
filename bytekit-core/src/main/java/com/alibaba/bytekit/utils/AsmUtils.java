@@ -20,7 +20,7 @@ import com.alibaba.deps.org.objectweb.asm.Opcodes;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.commons.ClassRemapper;
 import com.alibaba.deps.org.objectweb.asm.commons.JSRInlinerAdapter;
-import com.alibaba.deps.org.objectweb.asm.commons.Remapper;
+import com.alibaba.deps.org.objectweb.asm.commons.SimpleRemapper;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 import com.alibaba.deps.org.objectweb.asm.tree.FieldNode;
@@ -32,7 +32,7 @@ import com.alibaba.deps.org.objectweb.asm.tree.TryCatchBlockNode;
 import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
 import com.alibaba.deps.org.objectweb.asm.util.ASMifier;
 import com.alibaba.deps.org.objectweb.asm.util.TraceClassVisitor;
-import com.alibaba.bytekit.asm.ClassLoaderAwareClassWriter;
+import com.alibaba.bytekit.asm.ClassMetaClassWriter;
 
 /**
  * 
@@ -76,7 +76,7 @@ public class AsmUtils {
      */
     public static byte[] toBytes(ClassNode classNode, ClassLoader classLoader, ClassReader classReader) {
         int flags = ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS;
-        ClassWriter writer = new ClassLoaderAwareClassWriter(classReader, flags, classLoader);
+        ClassWriter writer = new ClassMetaClassWriter(classReader, flags, classLoader);
         classNode.accept(writer);
         return writer.toByteArray();
     }
@@ -87,38 +87,22 @@ public class AsmUtils {
         return writer.toByteArray();
     }
 
+    public static ClassNode renameClass(ClassNode classNode, final String newClassName) {
+        final String internalName = newClassName.replace('.', '/');
+        ClassNode renamedNode = new ClassNode();
+        ClassRemapper remapper = new ClassRemapper(renamedNode, new SimpleRemapper(classNode.name, internalName));
+        classNode.accept(remapper);
+        return renamedNode;
+    }
+
     public static byte[] renameClass(byte[] classBytes, final String newClassName) {
         final String internalName = newClassName.replace('.', '/');
-
         ClassReader reader = new ClassReader(classBytes);
         ClassWriter writer = new ClassWriter(0);
 
-        class RenameRemapper extends Remapper {
-            private String className;
-
-            @Override
-            public String map(String typeName) {
-                if (typeName.equals(className)) {
-                    return internalName;
-                }
-                return super.map(typeName);
-            }
-
-            public void setClassName(String className) {
-                this.className = className;
-            }
-        }
-
-        final RenameRemapper renameRemapper = new RenameRemapper();
-        ClassRemapper adapter = new ClassRemapper(writer, renameRemapper) {
-            @Override
-            public void visit(final int version, final int access, final String name, final String signature,
-                    final String superName, final String[] interfaces) {
-                renameRemapper.setClassName(name);
-                super.visit(version, access, name, signature, superName, interfaces);
-            }
-        };
-        reader.accept(adapter, ClassReader.EXPAND_FRAMES);
+        final SimpleRemapper renameRemapper = new SimpleRemapper(reader.getClassName(), internalName);
+        ClassRemapper adapter = new ClassRemapper(writer, renameRemapper);
+        reader.accept(adapter, 0);
         writer.visitEnd();
         return writer.toByteArray();
     }
@@ -175,6 +159,10 @@ public class AsmUtils {
     }
 
     public static ClassNode removeJSRInstructions(ClassNode classNode) {
+        // 据jvm的规范，在 51 及之后版本的字节码里，不允许出现 jsr
+        if (classNode.version >= 51) {
+            return classNode;
+        }
         ClassNode result = new ClassNode(Opcodes.ASM9);
         classNode.accept(new ClassVisitor(Opcodes.ASM9, result) {
             @Override

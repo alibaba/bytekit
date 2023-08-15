@@ -45,6 +45,8 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 if (originClassNode == null) {
                     originClassNode = new ClassNode(Opcodes.ASM9);
                     classReader = AsmUtils.toClassNode(classfileBuffer, originClassNode);
+                    // fix https://github.com/alibaba/one-java-agent/issues/51
+                    originClassNode = AsmUtils.removeJSRInstructions(originClassNode);
                     targetClassNode = AsmUtils.copy(originClassNode);
                 }
 
@@ -57,9 +59,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
                 // 如果 @Instrument 的字节码的类名 和 目标字节码的类名不一样，则修改为一致
                 if (!originClassNode.name.equals(instrumentClassNode.name)) {
-                    byte[] renameClass = AsmUtils.renameClass(AsmUtils.toBytes(instrumentClassNode),
-                            Type.getObjectType(originClassNode.name).getClassName());
-                    instrumentClassNode = AsmUtils.toClassNode(renameClass);
+                    instrumentClassNode = AsmUtils.renameClass(instrumentClassNode, originClassNode.name);
                 }
 
                 // 查找 @Instrument 字节码里的 method，如果在原来的有同样的，则处理替换；如果没有，则复制过去
