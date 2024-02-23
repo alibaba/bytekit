@@ -251,4 +251,10 @@ public class InterceptorProcessor {
         this.exceptionHandlerConfig = exceptionHandlerConfig;
     }
 
+    @Override
+    public String toString() {
+        return "InterceptorProcessor [locationMatcher=" + locationMatcher + ", interceptorMethodConfig="
+                + interceptorMethodConfig + ", exceptionHandlerConfig=" + exceptionHandlerConfig + ", classLoader="
+                + classLoader + "]";
+    }
 }

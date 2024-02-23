@@ -68,4 +68,10 @@ public class InterceptorMethodConfig {
     public void setSuppress(String suppress) {
         this.suppress = suppress;
     }
+
+    @Override
+    public String toString() {
+        return "InterceptorMethodConfig [owner=" + owner + ", methodName=" + methodName + ", methodDesc=" + methodDesc
+                + ", inline=" + inline + ", bindings=" + bindings + ", suppress=" + suppress + "]";
+    }
 }
