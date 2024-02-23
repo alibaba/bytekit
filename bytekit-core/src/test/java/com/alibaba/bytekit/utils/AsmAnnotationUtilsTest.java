@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class AsmAnnotationUtilsTest {
                 Type.getDescriptor(AdviceInfo.class), "adviceInfos");
         Assertions.assertThat(adviceInfos).containsExactly("xxxx", "yyy");
 
-        Assertions.assertThat(AsmAnnotationUtils.queryAnnotationValue(classNodeA.visibleAnnotations,
+        Assertions.assertThat((BigDecimal)AsmAnnotationUtils.queryAnnotationValue(classNodeA.visibleAnnotations,
                 Type.getDescriptor(AdviceInfo.class), "notExist")).isNull();
 
         List<List<String>> allAdviceInfos = AsmAnnotationUtils.queryAnnotationValues(classNodeA.visibleAnnotations,
