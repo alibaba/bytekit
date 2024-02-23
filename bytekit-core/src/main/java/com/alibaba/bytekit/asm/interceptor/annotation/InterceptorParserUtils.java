@@ -38,10 +38,12 @@ public class InterceptorParserUtils {
         interceptorMethodConfig.setBindings(bindings);
 
         //errorHandlerMethodConfig
-        InterceptorMethodConfig errorHandlerMethodConfig = ExceptionHandlerUtils
-                .errorHandlerMethodConfig(suppress, suppressHandler);
-        if (errorHandlerMethodConfig != null) {
-            interceptorProcessor.setExceptionHandlerConfig(errorHandlerMethodConfig);
+        if (suppress != null) {
+            InterceptorMethodConfig errorHandlerMethodConfig = ExceptionHandlerUtils.errorHandlerMethodConfig(suppress,
+                    suppressHandler);
+            if (errorHandlerMethodConfig != null) {
+                interceptorProcessor.setExceptionHandlerConfig(errorHandlerMethodConfig);
+            }
         }
 
         return interceptorProcessor;
