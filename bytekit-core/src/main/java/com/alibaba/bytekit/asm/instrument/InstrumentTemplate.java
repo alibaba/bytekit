@@ -35,6 +35,7 @@ public class InstrumentTemplate {
     private final Logger logger = Loggers.getLogger(getClass());
     public static final String INSTRUMENT_PROPERTIES = "instrument.properties";
     public static final String INSTRUMENT = "instrument";
+    public static final String TRIGGER_RETRANSFORM = "triggerRetransform";
     /**
      * 通常是工具类，需要在运行时define到用户的ClassLoader里
      */
@@ -84,8 +85,10 @@ public class InstrumentTemplate {
                     InputStream inputStream = jarFile.getInputStream(propertiesEntry);
                     Properties properties = PropertiesUtils.loadNotNull(inputStream);
 
+                    String triggerRetransformValue = properties.getProperty("triggerRetransform", "false"); // 使用默认值避免null值
+                    boolean triggerRetransform = Boolean.parseBoolean(triggerRetransformValue);
                     for (Pair<String, byte[]> pair : readClassBytes(properties, INSTRUMENT, jarFile)) {
-                        parse(result, pair.second);
+                        parse(result, pair.second, triggerRetransform);
                     }
 
                     for (Pair<String, byte[]> pair : readClassBytes(properties, DEFINE, jarFile)) {
@@ -100,7 +103,7 @@ public class InstrumentTemplate {
 
         // 处理单独设置 byte[]
         for (byte[] classBytes : instrumentClassList) {
-            parse(result, classBytes);
+            parse(result, classBytes, false);
         }
 
         return result;
@@ -134,7 +137,7 @@ public class InstrumentTemplate {
         return result;
     }
 
-    private void parse(InstrumentParseResult result, byte[] classBytes) {
+    private void parse(InstrumentParseResult result, byte[] classBytes, boolean triggerRetransform) {
         ClassNode classNode = AsmUtils.toClassNode(classBytes);
 
         if (!AsmUtils.fitCurrentJvmMajorVersion(classNode)) {
@@ -155,7 +158,7 @@ public class InstrumentTemplate {
 
         if (matchClassList != null && !matchClassList.isEmpty()) {
             SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher, updateMajorVersion));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher, updateMajorVersion, triggerRetransform));
         }
 
         List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
@@ -163,7 +166,7 @@ public class InstrumentTemplate {
 
         if (!matchSuperclassList.isEmpty()) {
             SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform));
         }
 
         List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
@@ -171,7 +174,7 @@ public class InstrumentTemplate {
 
         if (!matchInterfaceList.isEmpty()) {
             SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion));
+            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform));
         }
 
         // TODO 处理 @NewField

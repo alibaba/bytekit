@@ -24,15 +24,21 @@ public class InstrumentConfig {
 
     private ClassMatcher classMatcher;
 
+    /**
+     * 有的类在之前已经被加载到 JVM 里了，需要显式触发 Retransform ，增强的字节码才能生效
+     */
+    private boolean triggerRetransform = false;
+
     public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher) {
-        this(instrumentClassNode, classMatcher, false);
+        this(instrumentClassNode, classMatcher, false, false);
     }
 
-    public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher, boolean updateMajorVersion) {
+    public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher, boolean updateMajorVersion, boolean triggerRetransform) {
         super();
         this.instrumentClassNode = instrumentClassNode;
         this.classMatcher = classMatcher;
         this.updateMajorVersion = updateMajorVersion;
+        this.triggerRetransform = triggerRetransform;
     }
 
     public ClassNode getInstrumentClassNode() {
@@ -58,4 +64,13 @@ public class InstrumentConfig {
     public void setUpdateMajorVersion(boolean updateMajorVersion) {
         this.updateMajorVersion = updateMajorVersion;
     }
+
+    public boolean isTriggerRetransform() {
+        return triggerRetransform;
+    }
+
+    public void setTriggerRetransform(boolean triggerRetransform) {
+        this.triggerRetransform = triggerRetransform;
+    }
+
 }
