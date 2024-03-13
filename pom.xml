@@ -51,7 +51,7 @@
 
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
 
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
 
         <!-- Test -->
         <junit.version>4.13.2</junit.version>
@@ -99,7 +99,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy-agent</artifactId>
-                <version>1.12.21</version>
+                <version>1.14.12</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
