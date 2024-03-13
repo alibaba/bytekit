@@ -49,6 +49,10 @@ public class InterceptorProcessor {
         List<Binding> interceptorBindings = interceptorMethodConfig.getBindings();
 
         for (Location location : locations) {
+            //skip the location if it should be filtered
+            if (location.isEnableFilteredMark() && location.determineFiltered()) {
+                continue;
+            }
 
             // 有三小段代码，1: 保存当前栈上的值的 , 2: 插入的回调的 ， 3：恢复当前栈的
 

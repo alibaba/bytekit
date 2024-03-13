@@ -425,7 +425,25 @@ public abstract class Binding {
         boolean optional() default false;
 
     }
-    
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @java.lang.annotation.Target(ElementType.PARAMETER)
+    @BindingParserHandler(parser = StringBindingParser.class)
+    public static @interface StringValue {
+
+        String value() default "";
+
+    }
+
+    public static class StringBindingParser implements BindingParser {
+        @Override
+        public Binding parse(Annotation annotation) {
+            StringValue stringValue = (StringValue) annotation;
+            return new StringBinding(stringValue.value());
+        }
+    }
+
     public static class MonitorBindingParser implements BindingParser {
         @Override
         public Binding parse(Annotation annotation) {
