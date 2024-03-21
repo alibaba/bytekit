@@ -19,9 +19,11 @@ import com.alibaba.bytekit.utils.AsmOpUtils;
 public class LocalVarsBinding extends Binding{
 
     private String excludePattern;
+    private boolean ignoreThis;
 
-    public LocalVarsBinding(String excludePattern) {
+    public LocalVarsBinding(String excludePattern, boolean ignoreThis) {
         this.excludePattern = excludePattern;
+        this.ignoreThis = ignoreThis;
     }
 
     public LocalVarsBinding() {
@@ -37,7 +39,12 @@ public class LocalVarsBinding extends Binding{
             Iterator<LocalVariableNode> it = localVariables.iterator();
             while(it.hasNext()){
                 LocalVariableNode localVariableNode = it.next();
-                if (MatchUtils.wildcardMatch(localVariableNode.name,excludePattern)) it.remove();
+                if (MatchUtils.wildcardMatch(localVariableNode.name, excludePattern)) {
+                    it.remove();
+                }
+                if (ignoreThis && localVariableNode.name.equals("this")) {
+                    it.remove();
+                }
             }
         }
 

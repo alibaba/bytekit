@@ -14,9 +14,14 @@ import com.alibaba.bytekit.utils.AsmOpUtils;
 public class LocalVarNamesBinding extends Binding {
 
     private String excludePattern;
+    /**
+     * 是否在变量中忽略掉 this
+     */
+    private boolean ignoreThis;
 
-    public LocalVarNamesBinding(String excludePattern) {
+    public LocalVarNamesBinding(String excludePattern, boolean ignoreThis) {
         this.excludePattern = excludePattern;
+        this.ignoreThis = ignoreThis;
     }
 
     public LocalVarNamesBinding() {
@@ -31,7 +36,12 @@ public class LocalVarNamesBinding extends Binding {
             Iterator<LocalVariableNode> it = localVariables.iterator();
             while(it.hasNext()){
                 LocalVariableNode localVariableNode = it.next();
-                if (MatchUtils.wildcardMatch(localVariableNode.name,excludePattern)) it.remove();
+                if (MatchUtils.wildcardMatch(localVariableNode.name,excludePattern)) {
+                    it.remove();
+                }
+                if (ignoreThis && localVariableNode.name.equals("this")) {
+                    it.remove();
+                }
             }
         }
 

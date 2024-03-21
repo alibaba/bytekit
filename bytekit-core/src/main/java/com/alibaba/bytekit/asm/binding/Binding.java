@@ -84,7 +84,7 @@ public abstract class Binding {
     public static @interface LocalVars {
 
         String excludePattern() default "";
-        
+        boolean ignoreThis() default false;
         boolean optional() default false;
 
     }
@@ -93,7 +93,7 @@ public abstract class Binding {
         public Binding parse(Annotation annotation) {
             if (annotation instanceof LocalVars){
                 LocalVars LocalVars = (LocalVars) annotation;
-                return new LocalVarsBinding(LocalVars.excludePattern());
+                return new LocalVarsBinding(LocalVars.excludePattern(), LocalVars.ignoreThis());
             }
             return new LocalVarsBinding();
         }
@@ -108,6 +108,8 @@ public abstract class Binding {
 
         String excludePattern() default "";
 
+        boolean ignoreThis() default false;
+
         boolean optional() default false;
 
     }
@@ -116,7 +118,7 @@ public abstract class Binding {
         public Binding parse(Annotation annotation) {
             if (annotation instanceof LocalVarNames){
                 LocalVarNames localVarNames = (LocalVarNames) annotation;
-                return new LocalVarNamesBinding(localVarNames.excludePattern());
+                return new LocalVarNamesBinding(localVarNames.excludePattern(), localVarNames.ignoreThis());
             }
             return new LocalVarNamesBinding();
         }
