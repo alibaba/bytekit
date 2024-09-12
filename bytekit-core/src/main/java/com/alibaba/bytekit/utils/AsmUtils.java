@@ -160,7 +160,7 @@ public class AsmUtils {
 
     public static ClassNode removeJSRInstructions(ClassNode classNode) {
         // 据jvm的规范，在 51 及之后版本的字节码里，不允许出现 jsr
-        if (classNode.version >= 51) {
+        if (getMajorVersion(classNode.version) >= 51) {
             return classNode;
         }
         ClassNode result = new ClassNode(Opcodes.ASM9);
