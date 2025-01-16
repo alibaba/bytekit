@@ -51,7 +51,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
                 }
 
                 // 匹配上，则进行字节码替换处理
-                ClassNode instrumentClassNode = config.getInstrumentClassNode();
+                ClassNode instrumentClassNode = AsmUtils.copy(config.getInstrumentClassNode());
 
                 if(config.isUpdateMajorVersion()) {
                     AsmUtils.updateMajorVersion(instrumentClassNode, targetClassNode);
@@ -121,6 +121,7 @@ public class InstrumentTransformer implements ClassFileTransformer {
 
             AsmUtils.fixMajorVersion(targetClassNode);
             byte[] resutlBytes = AsmUtils.toBytes(targetClassNode, loader, classReader);
+            logger.info("transform class: " + className + " success!");
             return resutlBytes;
         }
 
