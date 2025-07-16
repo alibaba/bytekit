@@ -69,7 +69,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
+                <version>1.7.36</version>
             </dependency>
             <dependency>
                 <groupId>org.benf</groupId>
@@ -85,7 +85,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
 
