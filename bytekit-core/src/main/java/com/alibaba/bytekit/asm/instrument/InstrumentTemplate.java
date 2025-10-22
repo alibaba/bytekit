@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -85,14 +87,47 @@ public class InstrumentTemplate {
                     InputStream inputStream = jarFile.getInputStream(propertiesEntry);
                     Properties properties = PropertiesUtils.loadNotNull(inputStream);
 
-                    String triggerRetransformValue = properties.getProperty("triggerRetransform", "false"); // 使用默认值避免null值
+                    String triggerRetransformValue = properties.getProperty("triggerRetransform", "false");
                     boolean triggerRetransform = Boolean.parseBoolean(triggerRetransformValue);
-                    for (Pair<String, byte[]> pair : readClassBytes(properties, INSTRUMENT, jarFile)) {
-                        parse(result, pair.second, triggerRetransform);
+                    
+                    // 解析新格式：instrument.{key}=... 和 define.{key}=...
+                    Map<String, List<Pair<String, byte[]>>> instrumentMap = new HashMap<String, List<Pair<String, byte[]>>>();
+                    Map<String, List<Pair<String, byte[]>>> defineMap = new HashMap<String, List<Pair<String, byte[]>>>();
+                    
+                    for (String key : properties.stringPropertyNames()) {
+                        if (key.startsWith("instrument.")) {
+                            String configKey = key.substring("instrument.".length());
+                            List<Pair<String, byte[]>> classBytesList = readClassBytes(properties, key, jarFile);
+                            if (!classBytesList.isEmpty()) {
+                                instrumentMap.put(configKey, classBytesList);
+                            }
+                        } else if (key.startsWith("define.")) {
+                            String configKey = key.substring("define.".length());
+                            List<Pair<String, byte[]>> classBytesList = readClassBytes(properties, key, jarFile);
+                            if (!classBytesList.isEmpty()) {
+                                defineMap.put(configKey, classBytesList);
+                            }
+                        } else if (key.equals(INSTRUMENT)) {
+                            // 兼容旧格式：instrument=...
+                            for (Pair<String, byte[]> pair : readClassBytes(properties, INSTRUMENT, jarFile)) {
+                                parse(result, pair.second, triggerRetransform, null);
+                            }
+                        } else if (key.equals(DEFINE)) {
+                            // 兼容旧格式：define=...（全局 define，会被添加到所有 instrument）
+                            for (Pair<String, byte[]> pair : readClassBytes(properties, DEFINE, jarFile)) {
+                                result.addDefineClass(pair.first, pair.second);
+                            }
+                        }
                     }
-
-                    for (Pair<String, byte[]> pair : readClassBytes(properties, DEFINE, jarFile)) {
-                        result.addDefineClass(pair.first, pair.second);
+                    
+                    // 处理新格式的 instrument 和 define 关联
+                    for (Map.Entry<String, List<Pair<String, byte[]>>> entry : instrumentMap.entrySet()) {
+                        String configKey = entry.getKey();
+                        List<Pair<String, byte[]>> defineClassList = defineMap.get(configKey);
+                        
+                        for (Pair<String, byte[]> instrumentPair : entry.getValue()) {
+                            parse(result, instrumentPair.second, triggerRetransform, defineClassList);
+                        }
                     }
                 }
 
@@ -103,7 +138,7 @@ public class InstrumentTemplate {
 
         // 处理单独设置 byte[]
         for (byte[] classBytes : instrumentClassList) {
-            parse(result, classBytes, false);
+            parse(result, classBytes, false, null);
         }
 
         return result;
@@ -137,7 +172,7 @@ public class InstrumentTemplate {
         return result;
     }
 
-    private void parse(InstrumentParseResult result, byte[] classBytes, boolean triggerRetransform) {
+    private void parse(InstrumentParseResult result, byte[] classBytes, boolean triggerRetransform, List<Pair<String, byte[]>> defineClassList) {
         ClassNode classNode = AsmUtils.toClassNode(classBytes);
 
         if (!AsmUtils.fitCurrentJvmMajorVersion(classNode)) {
@@ -158,7 +193,9 @@ public class InstrumentTemplate {
 
         if (matchClassList != null && !matchClassList.isEmpty()) {
             SimpleClassMatcher classMatcher = new SimpleClassMatcher(matchClassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, classMatcher, updateMajorVersion, triggerRetransform));
+            InstrumentConfig config = new InstrumentConfig(classNode, classMatcher, updateMajorVersion, triggerRetransform);
+            addDefineConfigs(config, defineClassList);
+            result.addInstrumentConfig(config);
         }
 
         List<String> matchSuperclassList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
@@ -166,7 +203,9 @@ public class InstrumentTemplate {
 
         if (!matchSuperclassList.isEmpty()) {
             SimpleSubclassMatcher matcher = new SimpleSubclassMatcher(matchSuperclassList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform));
+            InstrumentConfig config = new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform);
+            addDefineConfigs(config, defineClassList);
+            result.addInstrumentConfig(config);
         }
 
         List<String> matchInterfaceList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
@@ -174,10 +213,23 @@ public class InstrumentTemplate {
 
         if (!matchInterfaceList.isEmpty()) {
             SimpleInterfaceMatcher matcher = new SimpleInterfaceMatcher(matchInterfaceList);
-            result.addInstrumentConfig(new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform));
+            InstrumentConfig config = new InstrumentConfig(classNode, matcher, updateMajorVersion, triggerRetransform);
+            addDefineConfigs(config, defineClassList);
+            result.addInstrumentConfig(config);
         }
 
         // TODO 处理 @NewField
+    }
+
+    /**
+     * 将 define 类列表添加到 InstrumentConfig
+     */
+    private void addDefineConfigs(InstrumentConfig config, List<Pair<String, byte[]>> defineClassList) {
+        if (defineClassList != null && !defineClassList.isEmpty()) {
+            for (Pair<String, byte[]> pair : defineClassList) {
+                config.addDefineConfig(new DefineConfig(pair.second, pair.first));
+            }
+        }
     }
 
     public static List<Class<?>> matchedClass(Instrumentation instrumentation, InstrumentConfig instrumentConfig) {

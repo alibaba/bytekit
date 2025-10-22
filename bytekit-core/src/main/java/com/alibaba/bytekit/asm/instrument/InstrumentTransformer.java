@@ -3,6 +3,7 @@ package com.alibaba.bytekit.asm.instrument;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.bytekit.asm.inst.impl.InstrumentImpl;
@@ -97,8 +98,23 @@ public class InstrumentTransformer implements ClassFileTransformer {
         if (targetClassNode != null) {
             // TODO 支持 bootstrap classloader?
             if (loader != null) {
-                List<DefineConfig> defineConfigs = instrumentParseResult.getDefineConfigs();
-                for (DefineConfig defineConfig : defineConfigs) {
+                // 收集所有匹配的 instrument config 关联的 define 类
+                List<DefineConfig> allDefineConfigs = new ArrayList<DefineConfig>();
+                for (InstrumentConfig config : instrumentConfigs) {
+                    if (config.getClassMatcher().match(loader, className, classBeingRedefined, protectionDomain,
+                            classfileBuffer)) {
+                        allDefineConfigs.addAll(config.getDefineConfigs());
+                    }
+                }
+                
+                // 兼容旧格式：添加全局的 define 配置（已废弃）
+                List<DefineConfig> globalDefineConfigs = instrumentParseResult.getDefineConfigs();
+                if (globalDefineConfigs != null && !globalDefineConfigs.isEmpty()) {
+                    allDefineConfigs.addAll(globalDefineConfigs);
+                }
+                
+                // 定义所有关联的类
+                for (DefineConfig defineConfig : allDefineConfigs) {
                     try {
                         ReflectUtils.defineClass(defineConfig.getClassName(), defineConfig.getClassBytes(), loader);
                     } catch (Throwable e) {

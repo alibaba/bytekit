@@ -1,5 +1,8 @@
 package com.alibaba.bytekit.asm.instrument;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.alibaba.bytekit.asm.matcher.ClassMatcher;
 import com.alibaba.deps.org.objectweb.asm.tree.ClassNode;
 
@@ -28,6 +31,11 @@ public class InstrumentConfig {
      * 有的类在之前已经被加载到 JVM 里了，需要显式触发 Retransform ，增强的字节码才能生效
      */
     private boolean triggerRetransform = false;
+
+    /**
+     * 与这个 instrument 配置关联的 define 类列表，只有当这个 instrument 匹配时才会 define 这些类
+     */
+    private List<DefineConfig> defineConfigs = new ArrayList<DefineConfig>();
 
     public InstrumentConfig(ClassNode instrumentClassNode, ClassMatcher classMatcher) {
         this(instrumentClassNode, classMatcher, false, false);
@@ -71,6 +79,18 @@ public class InstrumentConfig {
 
     public void setTriggerRetransform(boolean triggerRetransform) {
         this.triggerRetransform = triggerRetransform;
+    }
+
+    public List<DefineConfig> getDefineConfigs() {
+        return defineConfigs;
+    }
+
+    public void setDefineConfigs(List<DefineConfig> defineConfigs) {
+        this.defineConfigs = defineConfigs;
+    }
+
+    public void addDefineConfig(DefineConfig defineConfig) {
+        this.defineConfigs.add(defineConfig);
     }
 
 }
