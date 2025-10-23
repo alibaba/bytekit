@@ -39,6 +39,10 @@ public class InstrumentTransformer implements ClassFileTransformer {
         ClassNode originClassNode = null;
         ClassNode targetClassNode = null;
         ClassReader classReader = null;
+        if (!instrumentConfigs.isEmpty() && className == null && classfileBuffer != null) {
+            // 提前获取类名，避免在 matcher 多次解析字节码
+            className = AsmUtils.className(classfileBuffer);
+        }
         for (InstrumentConfig config : instrumentConfigs) {
             if (config.getClassMatcher().match(loader, className, classBeingRedefined, protectionDomain,
                     classfileBuffer)) {
