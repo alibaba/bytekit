@@ -185,8 +185,10 @@ public class InstrumentTemplate {
         // 清除apm类的行号
         AsmUtils.removeLineNumbers(classNode);
 
-        boolean updateMajorVersion = Boolean.parseBoolean((String) AsmAnnotationUtils.queryAnnotationValue(classNode.visibleAnnotations,
-                Type.getDescriptor(Instrument.class), "updateMajorVersion"));
+        // 注意：注解字段值如果等于默认值，编译到 class 文件时不会写入 values 里，这里需要补齐默认值
+        String updateMajorVersionValue = (String) AsmAnnotationUtils.queryAnnotationValue(classNode.visibleAnnotations,
+                Type.getDescriptor(Instrument.class), "updateMajorVersion");
+        boolean updateMajorVersion = updateMajorVersionValue == null || Boolean.parseBoolean(updateMajorVersionValue);
 
         List<String> matchClassList = AsmAnnotationUtils.queryAnnotationArrayValue(classNode.visibleAnnotations,
                 Type.getDescriptor(Instrument.class), "Class");
