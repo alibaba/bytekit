@@ -434,4 +434,38 @@ public abstract class Binding {
             return new MonitorBinding();
         }
     }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @java.lang.annotation.Target(ElementType.PARAMETER)
+    @BindingParserHandler(parser = MethodFirstLineBindingParser.class)
+    public static @interface MethodFirstLine {
+        
+        boolean optional() default false;
+
+    }
+    
+    public static class MethodFirstLineBindingParser implements BindingParser {
+        @Override
+        public Binding parse(Annotation annotation) {
+            return new MethodFirstLineBinding();
+        }
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @java.lang.annotation.Target(ElementType.PARAMETER)
+    @BindingParserHandler(parser = MethodLastLineBindingParser.class)
+    public static @interface MethodLastLine {
+        
+        boolean optional() default false;
+
+    }
+    
+    public static class MethodLastLineBindingParser implements BindingParser {
+        @Override
+        public Binding parse(Annotation annotation) {
+            return new MethodLastLineBinding();
+        }
+    }
 }

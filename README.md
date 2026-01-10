@@ -66,6 +66,8 @@ bytecode kit for java.
 
 * `@Binding.Line` 行号
 * `@Binding.Monitor` 同步块里监控的对象
+* `@Binding.MethodFirstLine` 方法的首次执行的行号
+* `@Binding.MethodLastLine` 方法的末次执行的行号
 
 
 ### 3. 可编程的异常处理
