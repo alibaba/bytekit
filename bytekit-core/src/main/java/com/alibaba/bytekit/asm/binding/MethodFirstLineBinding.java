@@ -17,8 +17,8 @@ public class MethodFirstLineBinding extends Binding {
     public void pushOntoStack(InsnList instructions, BindingContext bindingContext) {
         int line = -1;
         
-        // Start from the first instruction of the method
-        AbstractInsnNode insnNode = bindingContext.getMethodProcessor().getEnterInsnNode();
+        // Start from the very first instruction of the method
+        AbstractInsnNode insnNode = bindingContext.getMethodProcessor().getMethodNode().instructions.getFirst();
         
         // Find the first LineNumberNode
         while (insnNode != null) {

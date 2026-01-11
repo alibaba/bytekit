@@ -46,10 +46,9 @@ public class MethodFirstLineBindingTest {
         public static void onEnter(
                 @Binding.This Object object,
                 @Binding.MethodFirstLine int firstLine,
-                @Binding.MethodLastLine int lastLine,
                 @Binding.MethodName String methodName
                 ) {
-            System.err.println("AtEnter, methodName:" + methodName + ", firstLine:" + firstLine + ", lastLine:" + lastLine);
+            System.err.println("AtEnter, methodName:" + methodName + ", firstLine:" + firstLine);
         }
 
     }
@@ -60,11 +59,10 @@ public class MethodFirstLineBindingTest {
         public static void onExit(
                 @Binding.This Object object,
                 @Binding.MethodFirstLine int firstLine,
-                @Binding.MethodLastLine int lastLine,
                 @Binding.MethodName String methodName,
                 @Binding.Return Object returnObject
                 ) {
-            System.err.println("AtExit, methodName:" + methodName + ", firstLine:" + firstLine + ", lastLine:" + lastLine + ", return:" + returnObject);
+            System.err.println("AtExit, methodName:" + methodName + ", firstLine:" + firstLine + ", return:" + returnObject);
         }
 
     }
@@ -75,17 +73,16 @@ public class MethodFirstLineBindingTest {
         public static void onExceptionExit(
                 @Binding.This Object object,
                 @Binding.MethodFirstLine int firstLine,
-                @Binding.MethodLastLine int lastLine,
                 @Binding.MethodName String methodName,
                 @Binding.Throwable RuntimeException ex
                 ) {
-            System.err.println("AtExceptionExit, methodName:" + methodName + ", firstLine:" + firstLine + ", lastLine:" + lastLine + ", ex:" + ex.getMessage());
+            System.err.println("AtExceptionExit, methodName:" + methodName + ", firstLine:" + firstLine + ", ex:" + ex.getMessage());
         }
 
     }
 
     @Test
-    public void testMethodFirstLineAtEnter() throws Exception {
+    public void testMethodLineAtEnter() throws Exception {
         TestHelper helper = TestHelper.builder().interceptorClass(EnterInterceptor.class).methodMatcher("hello")
                 .reTransform(true);
         byte[] bytes = helper.process(Sample.class);
@@ -95,11 +92,10 @@ public class MethodFirstLineBindingTest {
         System.err.println(Decompiler.decompile(bytes));
 
         assertThat(capture.toString()).contains("AtEnter, methodName:hello, firstLine:");
-        assertThat(capture.toString()).contains("lastLine:");
     }
 
     @Test
-    public void testMethodFirstLineAtExit() throws Exception {
+    public void testMethodLineAtExit() throws Exception {
         TestHelper helper = TestHelper.builder().interceptorClass(ExitInterceptor.class).methodMatcher("hello")
                 .reTransform(true);
         byte[] bytes = helper.process(Sample.class);
@@ -109,11 +105,10 @@ public class MethodFirstLineBindingTest {
         System.err.println(Decompiler.decompile(bytes));
 
         assertThat(capture.toString()).contains("AtExit, methodName:hello, firstLine:");
-        assertThat(capture.toString()).contains("lastLine:");
     }
 
     @Test
-    public void testMethodFirstLineAtExceptionExit() throws Exception {
+    public void testMethodLineAtExceptionExit() throws Exception {
         TestHelper helper = TestHelper.builder().interceptorClass(ExceptionExitInterceptor.class).methodMatcher("hello")
                 .reTransform(true);
         byte[] bytes = helper.process(Sample.class);
@@ -127,7 +122,6 @@ public class MethodFirstLineBindingTest {
         System.err.println(Decompiler.decompile(bytes));
 
         assertThat(capture.toString()).contains("AtExceptionExit, methodName:hello, firstLine:");
-        assertThat(capture.toString()).contains("lastLine:");
     }
 
 }

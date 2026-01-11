@@ -18,8 +18,8 @@ public class MethodLastLineBinding extends Binding {
         int line = -1;
         LineNumberNode lastLineNumberNode = null;
         
-        // Start from the first instruction of the method
-        AbstractInsnNode insnNode = bindingContext.getMethodProcessor().getEnterInsnNode();
+        // Start from the very first instruction of the method
+        AbstractInsnNode insnNode = bindingContext.getMethodProcessor().getMethodNode().instructions.getFirst();
         
         // Find the last LineNumberNode
         while (insnNode != null) {
