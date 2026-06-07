@@ -17,6 +17,8 @@ import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodNode;
 import com.alibaba.deps.org.objectweb.asm.tree.TypeInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.VarInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.BasicValue;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.Frame;
 
 public class AsmOpUtils {
 
@@ -448,6 +450,9 @@ public class AsmOpUtils {
     public static List<LocalVariableNode> validVariables(List<LocalVariableNode> localVariables,
             AbstractInsnNode currentInsnNode) {
         List<LocalVariableNode> results = new ArrayList<LocalVariableNode>();
+        if (localVariables == null) {
+            return results;
+        }
 
         // find out current valid local variables
         for (LocalVariableNode localVariableNode : localVariables) {
@@ -461,5 +466,54 @@ public class AsmOpUtils {
         }
 
         return results;
+    }
+
+    public static List<LocalVariableNode> validVariables(List<LocalVariableNode> localVariables,
+            AbstractInsnNode currentInsnNode, Frame<BasicValue> frame) {
+        List<LocalVariableNode> results = validVariables(localVariables, currentInsnNode);
+        if (frame == null) {
+            return results;
+        }
+        List<LocalVariableNode> frameAwareResults = new ArrayList<LocalVariableNode>();
+        for (LocalVariableNode localVariableNode : results) {
+            if (isReadableLocalVariable(localVariableNode, frame)) {
+                frameAwareResults.add(localVariableNode);
+            }
+        }
+        return frameAwareResults;
+    }
+
+    private static boolean isReadableLocalVariable(LocalVariableNode localVariableNode, Frame<BasicValue> frame) {
+        if (localVariableNode.index < 0 || localVariableNode.index >= frame.getLocals()) {
+            return false;
+        }
+        BasicValue value = frame.getLocal(localVariableNode.index);
+        if (value == null || value == BasicValue.UNINITIALIZED_VALUE || value == BasicValue.RETURNADDRESS_VALUE) {
+            return false;
+        }
+        Type expectedType = Type.getType(localVariableNode.desc);
+        Type frameType = value.getType();
+        if (frameType == null) {
+            return false;
+        }
+        switch (expectedType.getSort()) {
+        case Type.BOOLEAN:
+        case Type.CHAR:
+        case Type.BYTE:
+        case Type.SHORT:
+        case Type.INT:
+            return Type.INT_TYPE.equals(frameType);
+        case Type.FLOAT:
+            return Type.FLOAT_TYPE.equals(frameType);
+        case Type.LONG:
+            return Type.LONG_TYPE.equals(frameType) && localVariableNode.index + 1 < frame.getLocals();
+        case Type.DOUBLE:
+            return Type.DOUBLE_TYPE.equals(frameType) && localVariableNode.index + 1 < frame.getLocals();
+        case Type.ARRAY:
+        case Type.OBJECT:
+            return value.isReference();
+        default:
+            return false;
+        }
     }
 }

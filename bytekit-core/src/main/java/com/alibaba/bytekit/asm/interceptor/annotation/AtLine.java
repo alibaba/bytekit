@@ -10,7 +10,9 @@ import java.lang.reflect.Method;
 import com.alibaba.bytekit.asm.interceptor.InterceptorProcessor;
 import com.alibaba.bytekit.asm.interceptor.annotation.AtLine.LineInterceptorProcessorParser;
 import com.alibaba.bytekit.asm.interceptor.parser.InterceptorProcessorParser;
+import com.alibaba.bytekit.asm.location.LineDuplicatePolicy;
 import com.alibaba.bytekit.asm.location.LineLocationMatcher;
+import com.alibaba.bytekit.asm.location.LineMode;
 import com.alibaba.bytekit.asm.location.LocationMatcher;
 
 @Documented
@@ -26,6 +28,10 @@ public @interface AtLine {
 
     int[] lines();
 
+    LineMode mode() default LineMode.FRAME_AWARE;
+
+    LineDuplicatePolicy duplicatePolicy() default LineDuplicatePolicy.DEFAULT;
+
     class LineInterceptorProcessorParser implements InterceptorProcessorParser {
 
         @Override
@@ -33,7 +39,8 @@ public @interface AtLine {
 
             AtLine atLine = (AtLine) annotationOnMethod;
 
-            LocationMatcher locationMatcher = new LineLocationMatcher(atLine.lines());
+            LocationMatcher locationMatcher = new LineLocationMatcher(atLine.mode(), atLine.duplicatePolicy(),
+                    atLine.lines());
 
             return InterceptorParserUtils.createInterceptorProcessor(method,
                     locationMatcher,

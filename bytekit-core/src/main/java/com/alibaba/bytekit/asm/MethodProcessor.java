@@ -229,6 +229,10 @@ public class MethodProcessor {
         return variableNode;
     }
 
+    public LocalVariableNode initLineStackVariableNode(String name, Type type) {
+        return this.addInterceptorLocalVariable(this.innerVariablePrefix + name, type.getDescriptor());
+    }
+
     public TryCatchBlock initTryCatchBlock() {
         return initTryCatchBlock(THROWABLE_TYPE.getInternalName());
     }

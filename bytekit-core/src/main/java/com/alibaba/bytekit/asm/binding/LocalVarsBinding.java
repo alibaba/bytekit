@@ -5,11 +5,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.alibaba.bytekit.utils.MatchUtils;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.BasicValue;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.Frame;
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
 import com.alibaba.bytekit.utils.AsmOpUtils;
+import com.alibaba.bytekit.asm.location.Location.LineLocation;
 
 /**
  * TODO 增加一个配置，是否包含 method args
@@ -34,7 +37,9 @@ public class LocalVarsBinding extends Binding{
 
         AbstractInsnNode currentInsnNode = bindingContext.getLocation().getInsnNode();
 
-        List<LocalVariableNode> localVariables = new LinkedList<LocalVariableNode>(bindingContext.getMethodProcessor().getMethodNode().localVariables);
+        List<LocalVariableNode> rawLocalVariables = bindingContext.getMethodProcessor().getMethodNode().localVariables;
+        List<LocalVariableNode> localVariables = rawLocalVariables == null ? new LinkedList<LocalVariableNode>()
+                : new LinkedList<LocalVariableNode>(rawLocalVariables);
         if (excludePattern != null && !excludePattern.isEmpty()){
             Iterator<LocalVariableNode> it = localVariables.iterator();
             while(it.hasNext()){
@@ -48,7 +53,8 @@ public class LocalVarsBinding extends Binding{
             }
         }
 
-        List<LocalVariableNode> results = AsmOpUtils.validVariables(localVariables, currentInsnNode);
+        List<LocalVariableNode> results = AsmOpUtils.validVariables(localVariables, currentInsnNode,
+                currentFrame(bindingContext));
 
         AsmOpUtils.push(instructions, results.size());
         AsmOpUtils.newArray(instructions, AsmOpUtils.OBJECT_TYPE);
@@ -78,5 +84,12 @@ public class LocalVarsBinding extends Binding{
 
     public void setExcludePattern(String excludePattern) {
         this.excludePattern = excludePattern;
+    }
+
+    private Frame<BasicValue> currentFrame(BindingContext bindingContext) {
+        if (bindingContext.getLocation() instanceof LineLocation) {
+            return ((LineLocation) bindingContext.getLocation()).getFrame();
+        }
+        return null;
     }
 }
