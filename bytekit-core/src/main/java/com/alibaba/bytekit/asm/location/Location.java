@@ -1,11 +1,17 @@
 package com.alibaba.bytekit.asm.location;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.alibaba.deps.org.objectweb.asm.Type;
 import com.alibaba.deps.org.objectweb.asm.tree.AbstractInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.FieldInsnNode;
 import com.alibaba.deps.org.objectweb.asm.tree.InsnList;
 import com.alibaba.deps.org.objectweb.asm.tree.LocalVariableNode;
 import com.alibaba.deps.org.objectweb.asm.tree.MethodInsnNode;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.BasicValue;
+import com.alibaba.deps.org.objectweb.asm.tree.analysis.Frame;
 import com.alibaba.bytekit.asm.MethodProcessor;
 import com.alibaba.bytekit.asm.binding.BindingContext;
 import com.alibaba.bytekit.asm.binding.StackSaver;
@@ -97,14 +103,93 @@ public abstract class Location {
          * the line at which the trigger point should be inserted
          */
         private int targetLine;
+        private Frame<BasicValue> frame;
+        private List<Type> stackTypes;
+        private int locationIndex;
+        private List<LocalVariableNode> stackLocalVariables;
 
         public LineLocation(AbstractInsnNode insnNode, int targetLine) {
+            this(insnNode, targetLine, null, -1);
+        }
+
+        public LineLocation(AbstractInsnNode insnNode, int targetLine, Frame<BasicValue> frame, int locationIndex) {
             super(insnNode);
             this.targetLine = targetLine;
+            this.frame = frame;
+            this.locationIndex = locationIndex;
+            this.stackTypes = resolveStackTypes(frame);
+            this.stackNeedSave = !this.stackTypes.isEmpty();
         }
 
         public LocationType getLocationType() {
             return LocationType.LINE;
+        }
+
+        public int getTargetLine() {
+            return targetLine;
+        }
+
+        public Frame<BasicValue> getFrame() {
+            return frame;
+        }
+
+        @Override
+        public StackSaver getStackSaver() {
+            return new StackSaver() {
+
+                @Override
+                public void store(InsnList instructions, BindingContext bindingContext) {
+                    List<LocalVariableNode> localVariables = initStackLocalVariables(bindingContext.getMethodProcessor());
+                    for (int i = stackTypes.size() - 1; i >= 0; i--) {
+                        AsmOpUtils.storeVar(instructions, stackTypes.get(i), localVariables.get(i).index);
+                    }
+                }
+
+                @Override
+                public void load(InsnList instructions, BindingContext bindingContext) {
+                    List<LocalVariableNode> localVariables = initStackLocalVariables(bindingContext.getMethodProcessor());
+                    for (int i = 0; i < stackTypes.size(); i++) {
+                        AsmOpUtils.loadVar(instructions, stackTypes.get(i), localVariables.get(i).index);
+                    }
+                }
+
+                @Override
+                public Type getType(BindingContext bindingContext) {
+                    // LineLocation 只负责保存并恢复原始操作数栈，不支持用回调返回值替换栈值。
+                    throw new UnsupportedOperationException("LineLocation stack saver does not support getType().");
+                }
+            };
+        }
+
+        private synchronized List<LocalVariableNode> initStackLocalVariables(MethodProcessor methodProcessor) {
+            if (stackLocalVariables == null) {
+                List<LocalVariableNode> localVariables = new ArrayList<LocalVariableNode>(stackTypes.size());
+                for (int i = 0; i < stackTypes.size(); i++) {
+                    String name = "line_" + targetLine + "_" + locationIndex + "_stack_" + i;
+                    localVariables.add(methodProcessor.initLineStackVariableNode(name, stackTypes.get(i)));
+                }
+                stackLocalVariables = localVariables;
+            }
+            return stackLocalVariables;
+        }
+
+        private List<Type> resolveStackTypes(Frame<BasicValue> frame) {
+            List<Type> result = new ArrayList<Type>();
+            if (frame == null) {
+                return result;
+            }
+            for (int i = 0; i < frame.getStackSize(); i++) {
+                BasicValue value = frame.getStack(i);
+                if (value == null) {
+                    return Collections.emptyList();
+                }
+                Type type = value.getType();
+                if (type == null) {
+                    return Collections.emptyList();
+                }
+                result.add(type);
+            }
+            return result;
         }
 
     }
