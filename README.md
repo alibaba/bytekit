@@ -93,9 +93,9 @@ bytecode kit for java.
 ```java
     public String hello(String str) {
         System.out.println("before");
-        Object value = InstrumentApi.invokeOrigin();
+        String value = InstrumentApi.invokeOrigin();
         System.out.println("after, result: " + value);
-        return object;
+        return value;
     }
 ```
 
@@ -104,9 +104,9 @@ bytecode kit for java.
 ```java
     public String hello(String str) {
         System.out.println("before");
-        Object value = "hello " + str;
+        String value = "hello " + str;
         System.out.println("after, result: " + value);
-        return object;
+        return value;
     }
 ```
 
